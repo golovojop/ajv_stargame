@@ -7,6 +7,11 @@ import com.badlogic.gdx.Screen;
 
 public class Base2DScreen implements Screen, InputProcessor {
 
+    final int ARROW_UP = 19;
+    final int ARROW_DOWN = 20;
+    final int ARROW_LEFT = 21;
+    final int ARROW_RIGHT = 22;
+
     /**
      * Screen implementation
      */
