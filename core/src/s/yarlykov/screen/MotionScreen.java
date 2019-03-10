@@ -33,7 +33,7 @@ public class MotionScreen extends Base2DScreen {
 
         switch (appType){
             case Android:
-                img = new Texture("alien4.png");
+                img = new Texture("aship.png");
                 SCAL = 6;
                 break;
             case Desktop:
@@ -70,14 +70,23 @@ public class MotionScreen extends Base2DScreen {
 
     @Override
     public boolean keyDown(int keycode) {
-        System.out.println("keyDown keycode = " + keycode);
-        return false;
-    }
-
-    @Override
-    public boolean keyUp(int keycode) {
-        System.out.println("keyUp keycode = " + keycode);
-        return false;
+        switch (keycode){
+            case ARROW_UP:
+                step = (new Vector2(0, 1)).nor().scl(SCAL);
+                break;
+            case ARROW_DOWN:
+                step = (new Vector2(0, -1)).nor().scl(SCAL);
+                break;
+            case ARROW_LEFT:
+                step = (new Vector2(-1, 0)).nor().scl(SCAL);
+                break;
+            case ARROW_RIGHT:
+                step = (new Vector2(1, 0)).nor().scl(SCAL);
+                break;
+                default:
+                    break;
+        }
+        return true;
     }
 
     @Override
