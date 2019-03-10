@@ -19,12 +19,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class StarGame extends ApplicationAdapter {
 	private SpriteBatch batch;
-	private Texture backgrround;
+	private Texture background;
 
 	@Override
 	public void create () {
 		batch = new SpriteBatch();
-		backgrround = new Texture("space.jpg");
+		background = new Texture("space.jpg");
 	}
 
 	@Override
@@ -34,13 +34,13 @@ public class StarGame extends ApplicationAdapter {
 
 		batch.begin();
 		// Set background
-		batch.draw(backgrround, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		batch.draw(background, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		batch.end();
 	}
 	
 	@Override
 	public void dispose () {
 		batch.dispose();
-		backgrround.dispose();
+		background.dispose();
 	}
 }
