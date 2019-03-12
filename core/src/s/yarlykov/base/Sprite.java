@@ -7,10 +7,10 @@ import s.yarlykov.math.Rect;
 
 public class Sprite extends Rect {
 
-    private float angle;
-    private float scale = 1f;
     private TextureRegion[] regions;
-    private int frame;
+    private float angle = 0f;
+    private float scale = 1f;
+    private int frame = 0;
 
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];

@@ -12,15 +12,19 @@ import s.yarlykov.math.*;
 
 public abstract class Base2DScreen implements Screen, InputProcessor {
 
-    protected SpriteBatch batch;
 
-    private Matrix4 worldToGl;	// Батчер работает с пространством OpenGL и конвертирует все входные переаметры
-    // через матрицу Matrix4 (OpenGL все интерпретирует в 3D)
+    /**
+     * Батчер работает с пространством OpenGL и конвертирует все входные переаметры
+     * через матрицу Matrix4 (OpenGL все интерпретирует в 3D)
+     */
+    private Matrix4 worldToGl;
     private Matrix3 screenToWorld;
-
     private Rect screenBounds; 	// границы области рисования в пикселях
     private Rect worldBounds; 	// границы проекции мировых координат
     private Rect glBounds; 		// квадрат OpenGL
+    protected SpriteBatch batch;
+
+    public final static float worldScale = 100f;
 
     private Vector2 touch;
 
@@ -40,7 +44,6 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public void render(float delta) {
-
     }
 
     // Вызывается при старте программы и при каждом изменении размера экрана.
@@ -62,11 +65,13 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
         // Обращаю внимание, что высота world в условных единицах не меняется.
         // Она всегда в данном случае равна 1f. Но при растягивании экрана может
         // поменяться aspect, а значит ширина у world.
-        worldBounds.setHeight(1f);
-        worldBounds.setWidth(1f * aspect);
+        worldBounds.setHeight(worldScale);
+        worldBounds.setWidth(worldScale * aspect);
         MatrixUtils.calcTransitionMatrix(worldToGl, worldBounds, glBounds);
 
+        // Переустановить матрицу в батче
         batch.setProjectionMatrix(worldToGl);
+
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
     }
 
