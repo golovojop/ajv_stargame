@@ -2,14 +2,13 @@ package s.yarlykov.screen;
 
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 
-import s.yarlykov.base.Base2DScreen;
+import s.yarlykov.base.Base2DScreenL2;
 
-public class MotionScreen extends Base2DScreen {
+public class MotionScreen extends Base2DScreenL2 {
 
     private SpriteBatch batch;
     private Texture img;
