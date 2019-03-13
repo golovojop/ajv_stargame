@@ -41,7 +41,7 @@ public class MotionScreen3 extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         batch.begin();
-        background.draw(batch);
+//        background.draw(batch);
         ship.draw(batch);
         batch.end();
         ship.update();
