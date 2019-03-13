@@ -12,21 +12,21 @@ import s.yarlykov.math.*;
 
 public abstract class Base2DScreen implements Screen, InputProcessor {
 
+    protected SpriteBatch batch;
+    protected Vector2 touch;
+
 
     /**
      * Батчер работает с пространством OpenGL и конвертирует все входные переаметры
      * через матрицу Matrix4 (OpenGL все интерпретирует в 3D)
      */
-    private Matrix4 worldToGl;
-    private Matrix3 screenToWorld;
+    protected Matrix4 worldToGl;
+    protected Matrix3 screenToWorld;
     private Rect screenBounds; 	// границы области рисования в пикселях
     private Rect worldBounds; 	// границы проекции мировых координат
     private Rect glBounds; 		// квадрат OpenGL
-    protected SpriteBatch batch;
 
-    public final static float worldScale = 100f;
-
-    private Vector2 touch;
+    private final float WORLD_SCALE = 10f;
 
     @Override
     public void show() {
@@ -61,18 +61,16 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
         // Новый aspect
         float aspect = width / (float) height;
+        MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
 
         // Обращаю внимание, что высота world в условных единицах не меняется.
         // Она всегда в данном случае равна 1f. Но при растягивании экрана может
         // поменяться aspect, а значит ширина у world.
-        worldBounds.setHeight(worldScale);
-        worldBounds.setWidth(worldScale * aspect);
+        worldBounds.setHeight(WORLD_SCALE);
+        worldBounds.setWidth(WORLD_SCALE * aspect);
+
         MatrixUtils.calcTransitionMatrix(worldToGl, worldBounds, glBounds);
-
-        // Переустановить матрицу в батче
         batch.setProjectionMatrix(worldToGl);
-
-        MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
     }
 
     public void resize(Rect worldBounds) {
@@ -121,8 +119,12 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println("touchDown screenX = " + screenX + " screenY = " + screenY);
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+        System.out.println("Base2DScreen: touchDown");
+        System.out.println("touch.x = " + touch.x + " touch.y = " + touch.y);
+
+        // Конвертируем экранную позицию клика в координаты world
+        touch.mul(screenToWorld);
+        System.out.println("world.x = " + touch.x + " world.y = " + touch.y);
         touchDown(touch, pointer);
         return false;
     }
@@ -134,8 +136,9 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+
         System.out.println("touchUp screenX = " + screenX + " screenY = " + screenY);
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+//        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
         touchUp(touch, pointer);
         return false;
     }
@@ -148,7 +151,7 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
         System.out.println("touchDragged screenX = " + screenX + " screenY = " + screenY);
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+//        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
         touchDragged(touch, pointer);
         return false;
     }

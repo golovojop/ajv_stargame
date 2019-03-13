@@ -11,6 +11,6 @@ public class StarSky extends Sprite {
 
         super(region);
         System.out.print("aspect " + aspect);
-        setSize(Base2DScreen.worldScale * aspect, Base2DScreen.worldScale);
+//        setSize(Base2DScreen.worldScale * aspect, Base2DScreen.worldScale);
     }
 }
