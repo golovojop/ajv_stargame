@@ -4,6 +4,7 @@ import com.badlogic.gdx.Application;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.base.Sprite;
@@ -16,8 +17,8 @@ public class StarShip extends Sprite {
     private Vector2 v;
     private Vector2 buf;
 
-    public StarShip(TextureRegion region) {
-        super(region);
+    public StarShip(TextureRegion region, Matrix3 m) {
+        super(region, m);
 
         setSize(0.2f, 0.2f);
         this.pos = new Vector2();
@@ -36,8 +37,8 @@ public class StarShip extends Sprite {
     }
 
     public boolean touchDown(Vector2 touch, int pointer) {
-        this.touch = touch;
-        v = touch.cpy().sub(pos).setLength(V_LEN);
+//        this.touch = touch;
+//        v = touch.cpy().sub(pos).setLength(V_LEN);
         return false;
     }
 

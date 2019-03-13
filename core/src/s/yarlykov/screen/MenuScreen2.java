@@ -21,8 +21,8 @@ public class MenuScreen2 extends Base2DScreen {
     public void show() {
         super.show();
         img = new Texture("badlogic.jpg");
-        touch = new Vector2();
         pos = new Vector2(0, 0);
+        touch = new Vector2();
         v = new Vector2();
         buf = new Vector2();
     }

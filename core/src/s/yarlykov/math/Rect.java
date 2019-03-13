@@ -1,5 +1,7 @@
 package s.yarlykov.math;
 
+import com.badlogic.gdx.math.Matrix3;
+import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -13,9 +15,7 @@ public class Rect {
     protected float halfWidth; // половина ширины
     protected float halfHeight; // половина высоты
 
-    public Rect() {
-
-    }
+    public Rect() {}
 
     public Rect(Rect from) {
         this(from.pos.x, from.pos.y, from.getHalfWidth(), from.getHalfHeight());
@@ -29,6 +29,14 @@ public class Rect {
 
     public float getLeft() {
         return pos.x - halfWidth;
+    }
+
+    public void setHalfWidth(float halfWidth) {
+        this.halfWidth = halfWidth;
+    }
+
+    public void setHalfHeight(float halfHeight) {
+        this.halfHeight = halfHeight;
     }
 
     public float getTop() {

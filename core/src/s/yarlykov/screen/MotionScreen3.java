@@ -30,14 +30,11 @@ public class MotionScreen3 extends Base2DScreen {
         super.show();
         shipName = (appType == Application.ApplicationType.Android) ? "aship.png" : "dship.png";
 
-        batch = new SpriteBatch();
-
         imgShip = new Texture(shipName);
         imgBack = new Texture("space.jpg");
 
-        background = new StarSky(new TextureRegion(imgBack), Gdx.graphics.getHeight()/Gdx.graphics.getWidth());
-        ship = new StarShip(new TextureRegion(imgShip));
-
+        background = new StarSky(new TextureRegion(imgBack), screenToWorld);
+        ship = new StarShip(new TextureRegion(imgShip), screenToWorld);
     }
 
     @Override
