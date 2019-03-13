@@ -35,6 +35,7 @@ public class MenuScreen2 extends Base2DScreen {
         batch.begin();
         batch.draw(img, pos.x, pos.y, 1f, 1f);
         batch.end();
+
         buf.set(touch);
         if (buf.sub(pos).len() <= V_LEN) {
             pos.set(touch);
@@ -54,11 +55,12 @@ public class MenuScreen2 extends Base2DScreen {
         System.out.println("MenuScreen2: touchDown");
         System.out.println("Mouse.X = " + screenX + " Mouse.Y = " + screenY);
 
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY);
+        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
 
         /**
          * Вектор скорости нужно задавать в координатах world
          */
-        v.set(touch.cpy().mul(screenToWorld).sub(pos)).setLength(V_LEN);
-        return super.touchDown(screenX, screenY, pointer, button);    }
+        v.set(touch.cpy().sub(pos)).setLength(V_LEN);
+        return super.touchDown(screenX, screenY, pointer, button);
+    }
 }

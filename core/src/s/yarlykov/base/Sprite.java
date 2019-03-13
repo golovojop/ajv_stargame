@@ -9,6 +9,11 @@ import s.yarlykov.math.Rect;
 
 public class Sprite extends Rect {
 
+    public final static int ARROW_UP = 19;
+    public final static int ARROW_DOWN = 20;
+    public final static int ARROW_LEFT = 21;
+    public final static int ARROW_RIGHT = 22;
+
     private TextureRegion[] regions;
     private Matrix3 toWorld;
     private float angle = 0f;
@@ -16,37 +21,31 @@ public class Sprite extends Rect {
     private int frame = 0;
 
     public Sprite(TextureRegion region, Matrix3 toWorld) {
-        super(0, 0, region.getRegionWidth()/2, region.getRegionHeight()/2);
         this.regions = new TextureRegion[1];
         this.regions[0] = region;
         this.toWorld = toWorld;
+
+        /**
+         * Настройка прямоугольника спрайта
+         */
+        Vector2 pos = (new Vector2()).set(0, 0).mul(toWorld);
+        Vector2 dims = (new Vector2(region.getRegionWidth()/2, region.getRegionHeight()/2)).mul(toWorld);
+        super.set(new Rect(pos.x, pos.y, dims.x, dims.y));
     }
 
+    /**
+     * Отрисовка спрайта
+     * @param batch
+     */
     public void draw(SpriteBatch batch) {
-        Rect rect = new Rect(super.pos.x, super.pos.y, super.halfWidth, super.halfHeight);
-        rect.pos.mul(toWorld);
-        Vector2 dims = new Vector2(rect.getHalfWidth(), rect.getHalfHeight());
-        rect.setHalfWidth(dims.x);
-        rect.setHalfHeight(dims.y);
-
-//        batch.draw(
-//                regions[frame],
-//                getLeft(), getBottom(),
-//                halfWidth, halfHeight,
-//                getWidth(), getHeight(),
-//                scale, scale,
-//                angle
-//        );
-
         batch.draw(
                 regions[frame],
-                rect.getLeft(), rect.getBottom(),
-                rect.getHalfWidth(), rect.getHalfHeight(),
-                rect.getWidth(), rect.getHeight(),
+                getLeft(), getBottom(),
+                halfWidth, halfHeight,
+                getWidth(), getHeight(),
                 scale, scale,
                 angle
         );
-
     }
 }
 

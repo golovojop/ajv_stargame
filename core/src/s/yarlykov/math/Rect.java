@@ -7,7 +7,6 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Прямоугольник
  *
- * Почему-то нет геттера для pos.
  */
 public class Rect {
 

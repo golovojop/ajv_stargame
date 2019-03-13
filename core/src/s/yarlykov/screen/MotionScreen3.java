@@ -22,6 +22,7 @@ public class MotionScreen3 extends Base2DScreen {
     private String shipName;
 
     public MotionScreen3(Application.ApplicationType appType) {
+        super();
         this.appType = appType;
     }
 
@@ -41,7 +42,7 @@ public class MotionScreen3 extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         batch.begin();
-//        background.draw(batch);
+        background.draw(batch);
         ship.draw(batch);
         batch.end();
         ship.update();
@@ -55,8 +56,23 @@ public class MotionScreen3 extends Base2DScreen {
     }
 
     @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        System.out.println("MotionScreen3: touchDown");
+        System.out.println("Mouse.X = " + screenX + " Mouse.Y = " + screenY);
+
+        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+        return touchDown(touch, pointer);
+    }
+
+    @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         ship.touchDown(touch, pointer);
         return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        System.out.println("MotionScreen3: keyDown " + keycode);
+        return ship.keyDown(keycode);
     }
 }
