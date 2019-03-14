@@ -26,11 +26,13 @@ public class MatrixUtils {
         float scaleX = dst.getWidth() / src.getWidth();
         float scaleY = dst.getHeight() / src.getHeight();
 
-        // Почему-то сзади наперед
-        // translate(-src.pos.x, -src.pos.y, 0f) - сместить прямоугольник SRC центром на начало координат. То есть центр фигуры в точке 0,0
-        // scale(scaleX, scaleY, 1f) - Масштабируем исходный rect в конечный rect
-        // translate(dst.pos.x, dst.pos.y, 0f) - возвращаем смасштабированный rect в целевую позицию
         mat.idt().translate(dst.pos.x, dst.pos.y, 0f).scale(scaleX, scaleY, 1f).translate(-src.pos.x, -src.pos.y, 0f);
+
+        // Это для дебага
+//        System.out.println("M4");
+//        System.out.println(mat.idt().translate(dst.pos.x, dst.pos.y, 0f) + "\n");
+//        System.out.println(mat.scale(scaleX, scaleY, 1f) + "\n");
+//        System.out.println(mat.translate(-src.pos.x, -src.pos.y, 0f) + "\n");
 
     }
 
@@ -44,5 +46,14 @@ public class MatrixUtils {
         float scaleX = dst.getWidth() / src.getWidth();
         float scaleY = dst.getHeight() / src.getHeight();
         mat.idt().translate(dst.pos.x, dst.pos.y).scale(scaleX, scaleY).translate(-src.pos.x, -src.pos.y);
+
+        // Это для дебага
+//        System.out.println("M3");
+//        System.out.println(mat.idt().translate(dst.pos.x, dst.pos.y) + "\n");
+//        System.out.println(mat.scale(scaleX, scaleY) + "\n");
+//        System.out.println(mat.translate(-src.pos.x, -src.pos.y) + "\n");
+
+
+
     }
 }
