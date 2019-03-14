@@ -3,7 +3,7 @@ package s.yarlykov;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 
-import s.yarlykov.screen.MotionScreen;
+import s.yarlykov.screen.MotionScreen3;
 
 public class Star2DGame extends Game {
     Application.ApplicationType appType;
@@ -14,6 +14,9 @@ public class Star2DGame extends Game {
 
     @Override
     public void create() {
-        setScreen(new MotionScreen(appType));
+        setScreen(new MotionScreen3(appType));
     }
+//    public void create() {
+//        setScreen(new MenuScreen2());
+//    }
 }
