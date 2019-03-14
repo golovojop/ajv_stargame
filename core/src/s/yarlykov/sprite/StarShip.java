@@ -24,7 +24,7 @@ public class StarShip extends Sprite {
     public StarShip(TextureRegion region, Matrix3 matrix) {
         super(region, matrix);
 
-        setSize(WORLD_SCALE/10, WORLD_SCALE/10);
+        setSize(WORLD_SCALE/7, WORLD_SCALE/7);
         this.matrix = matrix;
         this.touch = new Vector2();
         this.buf = new Vector2();
@@ -78,6 +78,9 @@ public class StarShip extends Sprite {
             default:
                 break;
         }
+
+        // Фиктивная целевая точка, чтобы сдвинуть фигурку, если она неподвижна
+        touch.set(WORLD_SCALE, WORLD_SCALE);
         v.set(direct).setLength(V_LEN);
         update();
         return true;

@@ -3,9 +3,6 @@ package s.yarlykov;
 import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 
-import s.yarlykov.screen.MenuScreen;
-import s.yarlykov.screen.MenuScreen2;
-import s.yarlykov.screen.MotionScreen;
 import s.yarlykov.screen.MotionScreen3;
 
 public class Star2DGame extends Game {

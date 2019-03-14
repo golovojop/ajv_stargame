@@ -1,6 +1,7 @@
 package s.yarlykov.sprite;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
@@ -15,5 +16,9 @@ public class StarSky extends Sprite {
     public StarSky(TextureRegion region, Matrix3 m) {
         super(region, m);
         setSize(WORLD_SCALE * Gdx.graphics.getWidth() / Gdx.graphics.getHeight(), WORLD_SCALE);
+    }
+
+    public void draw(SpriteBatch batch) {
+        super.draw(batch);
     }
 }
