@@ -58,12 +58,15 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
         screenBounds.setSize(width, height);
         screenBounds.setLeft(0);		// Координаты центра автоматически
-        screenBounds.setBottom(0);	// пересчитаются
+        screenBounds.setBottom(0);	    // пересчитаются
+
+        System.out.println("screenBounds.x " + screenBounds.pos.x + " screenBounds.y " + screenBounds.pos.y);
 
         float aspect = width / (float) height;
 
         worldBounds.setHeight(WORLD_SCALE);
         worldBounds.setWidth(WORLD_SCALE * aspect);
+        System.out.println("worldBounds.x " + worldBounds.pos.x + " worldBounds.y " + worldBounds.pos.y);
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
 
         MatrixUtils.calcTransitionMatrix(worldToGl, worldBounds, glBounds);
