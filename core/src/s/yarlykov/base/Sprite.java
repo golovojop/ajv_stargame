@@ -15,27 +15,17 @@ public class Sprite extends Rect {
     public final static int ARROW_RIGHT = 22;
 
     private TextureRegion[] regions;
-    private Matrix3 toWorld;
     private float angle = 0f;
     private float scale = 1f;
     private int frame = 0;
 
-    public Sprite(TextureRegion region, Matrix3 toWorld) {
+    public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
         this.regions[0] = region;
-        this.toWorld = toWorld;
-
-        /**
-         * Настройка прямоугольника спрайта
-         */
-        Vector2 pos = (new Vector2()).set(0, 0).mul(toWorld);
-        Vector2 dims = (new Vector2(region.getRegionWidth()/2, region.getRegionHeight()/2)).mul(toWorld);
-        super.set(new Rect(pos.x, pos.y, dims.x, dims.y));
     }
 
     /**
-     * Отрисовка спрайта
-     * @param batch
+     * TODO: Отрисовка спрайта
      */
     public void draw(SpriteBatch batch) {
         batch.draw(
@@ -47,5 +37,42 @@ public class Sprite extends Rect {
                 angle
         );
     }
+
+    /**
+     * TODO: Установка пропорций сторон
+     */
+    public void setHeightProportion(float height) {
+        setHeight(height);
+        float aspect = regions[frame].getRegionWidth() / (float) regions[frame].getRegionHeight();
+        setWidth(height * aspect);
+    }
+
+    public void resize(Rect worldBounds) {
+    }
+
+    public boolean touchDown(Vector2 touch, int pointer) {
+        return false;
+    }
+
+    public boolean touchUp(Vector2 touch, int pointer) {
+        return false;
+    }
+
+    public float getAngle() {
+        return angle;
+    }
+
+    public void setAngle(float angle) {
+        this.angle = angle;
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+    }
+
 }
 

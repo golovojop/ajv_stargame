@@ -8,6 +8,7 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.base.Sprite;
+import s.yarlykov.math.Rect;
 
 import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
@@ -15,17 +16,15 @@ public class StarShip extends Sprite {
     private static float V_LEN = 0.4f;
 
     private TextureRegion region;
-    private Matrix3 matrix;
     private Vector2 touch;
     private Vector2 pos;
     private Vector2 buf;
     private Vector2 v;
 
-    public StarShip(TextureRegion region, Matrix3 matrix) {
-        super(region, matrix);
+    public StarShip(TextureRegion region) {
+        super(region);
 
         setSize(WORLD_SCALE/7, WORLD_SCALE/7);
-        this.matrix = matrix;
         this.touch = new Vector2();
         this.buf = new Vector2();
         this.v = new Vector2();
@@ -45,6 +44,12 @@ public class StarShip extends Sprite {
     public void draw(SpriteBatch batch) {
         super.draw(batch);
         update();
+    }
+
+    @Override
+    public void resize(Rect worldBounds) {
+        setHeightProportion(worldBounds.getHeight());
+        pos.set(worldBounds.pos);
     }
 
     public boolean touchDown(Vector2 _touch, int pointer) {

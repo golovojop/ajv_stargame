@@ -34,8 +34,8 @@ public class MotionScreen3 extends Base2DScreen {
         imgShip = new Texture(shipName);
         imgBack = new Texture("space.jpg");
 
-        background = new StarSky(new TextureRegion(imgBack), screenToWorld);
-        ship = new StarShip(new TextureRegion(imgShip), screenToWorld);
+        background = new StarSky(new TextureRegion(imgBack));
+        ship = new StarShip(new TextureRegion(imgShip));
     }
 
     @Override
@@ -53,15 +53,6 @@ public class MotionScreen3 extends Base2DScreen {
         imgShip.dispose();
         imgBack.dispose();
         super.dispose();
-    }
-
-    @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println("MotionScreen3: touchDown");
-        System.out.println("Mouse.X = " + screenX + " Mouse.Y = " + screenY);
-
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
-        return touchDown(touch, pointer);
     }
 
     @Override

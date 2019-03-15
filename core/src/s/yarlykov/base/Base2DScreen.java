@@ -1,5 +1,4 @@
 package s.yarlykov.base;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
@@ -8,33 +7,54 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector2;
 
-import s.yarlykov.math.*;
+import s.yarlykov.math.MatrixUtils;
+import s.yarlykov.math.Rect;
 
 public abstract class Base2DScreen implements Screen, InputProcessor {
 
+    public static final float WORLD_SCALE = 100f;
 
     protected SpriteBatch batch;
+
+    private Matrix4 worldToGl;
+    private Matrix3 screenToWorld;
+
+    private Rect screenBounds; // границы области рисования в пикселях
+    private Rect worldBounds; // границы проекции мировых координат
+    private Rect glBounds; // квадрат OpenGL
+
     protected Vector2 touch;
 
     /**
-     * Батчер работает с пространством OpenGL и конвертирует все входные переаметры
-     * через матрицу Matrix4 (OpenGL все интерпретирует в 3D)
+     * Методы жизненного цикла экрана (Activity)
+     * -----------------------------------------
+     *     public void show();
+     *     public void resize(int width, int height);
+     *     public void render(float delta);
+     *     public void pause();
+     *     public void resume();
+     *     public void hide();
+     *     public void dispose();
      */
-    protected Matrix4 worldToGl;
-    protected Matrix3 screenToWorld;
-    private Rect screenBounds; 	// границы области рисования в пикселях
-    private Rect worldBounds; 	// границы проекции мировых координат
-    private Rect glBounds; 		// квадрат OpenGL
 
-    public static final float WORLD_SCALE = 100f;
+    /**
+     * События, которые принимает экран
+     *     public boolean keyDown(int keycode)
+     *     public boolean keyUp(int keycode)
+     *     public boolean keyTyped(char character)
+     *     public boolean touchDown(int screenX, int screenY, int pointer, int button)
+     *     public boolean touchUp(int screenX, int screenY, int pointer, int button)
+     *     public boolean touchDragged(int screenX, int screenY, int pointer)
+     *     public boolean touchDragged(Vector2 touch, int pointer)
+     *     public boolean mouseMoved(int screenX, int screenY)
+     *     public boolean scrolled(int amount)
+     */
 
     @Override
     public void show() {
-        System.out.println("sBase2DScreen: how");
-
+        System.out.println("show");
         batch = new SpriteBatch();
         Gdx.input.setInputProcessor(this);
-
         this.worldToGl = new Matrix4();
         this.screenToWorld = new Matrix3();
         this.screenBounds = new Rect();
@@ -47,27 +67,22 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
     public void render(float delta) {
     }
 
-    // Вызывается при старте программы и при каждом изменении размера экрана.
-    // При этом размер поверхности OpenGL не изменяется, он всегда равер 2f x 2f.
-    // А вот матрицу, которая преобразует координаты world в координаты OpenGL
-    // нужно скорретировать.
-    // Также нужно скорректировать матрицу преобразования screen -> world.
     @Override
     public void resize(int width, int height) {
         System.out.println("resize width = " + width + " height = " + height);
-
         screenBounds.setSize(width, height);
-        screenBounds.setLeft(0);		// Координаты центра автоматически
-        screenBounds.setBottom(0);	// пересчитаются
+        screenBounds.setLeft(0);
+        screenBounds.setBottom(0);
 
         float aspect = width / (float) height;
-
         worldBounds.setHeight(WORLD_SCALE);
         worldBounds.setWidth(WORLD_SCALE * aspect);
         MatrixUtils.calcTransitionMatrix(screenToWorld, screenBounds, worldBounds);
 
         MatrixUtils.calcTransitionMatrix(worldToGl, worldBounds, glBounds);
         batch.setProjectionMatrix(worldToGl);
+
+        resize(worldBounds);
     }
 
     public void resize(Rect worldBounds) {
@@ -98,48 +113,67 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean keyDown(int keycode) {
+        System.out.println("keyDown keycode = " + keycode);
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
+        System.out.println("keyUp keycode = " + keycode);
         return false;
     }
 
     @Override
     public boolean keyTyped(char character) {
+        System.out.println("keyTyped character = " + character);
         return false;
     }
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        System.out.println("touchDown screenX = " + screenX + " screenY = " + screenY);
+        /**
+         * Координаты тача нужно сконвертировать в world
+         */
+        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+        touchDown(touch, pointer);
         return false;
     }
 
     public boolean touchDown(Vector2 touch, int pointer) {
+        System.out.println("touchDown touch.x = " + touch.x + " touch.y = " + touch.y);
         return false;
     }
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-//        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+        System.out.println("touchUp screenX = " + screenX + " screenY = " + screenY);
+        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+        /**
+         * Координаты тача нужно сконвертировать в world
+         */
         touchUp(touch, pointer);
         return false;
     }
 
     public boolean touchUp(Vector2 touch, int pointer) {
-//        System.out.println("touchUp touch.x = " + touch.x + " touch.y = " + touch.y);
+        System.out.println("touchUp touch.x = " + touch.x + " touch.y = " + touch.y);
         return false;
     }
 
     @Override
     public boolean touchDragged(int screenX, int screenY, int pointer) {
-//        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
+        System.out.println("touchDragged screenX = " + screenX + " screenY = " + screenY);
+        /**
+         * Координаты тача нужно сконвертировать в world
+         */
+        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
         touchDragged(touch, pointer);
         return false;
     }
 
     public boolean touchDragged(Vector2 touch, int pointer) {
+        System.out.println("touchDragged touch.x = " + touch.x + " touch.y = " + touch.y);
         return false;
     }
 
