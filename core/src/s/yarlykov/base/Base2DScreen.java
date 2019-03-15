@@ -12,7 +12,7 @@ import s.yarlykov.math.Rect;
 
 public abstract class Base2DScreen implements Screen, InputProcessor {
 
-    public static final float WORLD_SCALE = 100f;
+    public static final float WORLD_SCALE = 1f;
 
     protected SpriteBatch batch;
 

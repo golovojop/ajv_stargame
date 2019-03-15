@@ -29,10 +29,10 @@ public class MotionScreen3 extends Base2DScreen {
     @Override
     public void show() {
         super.show();
-        shipName = (appType == Application.ApplicationType.Android) ? "aship.png" : "dship.png";
+        shipName = (appType == Application.ApplicationType.Android) ? "textures/aship.png" : "textures/dship.png";
 
         imgShip = new Texture(shipName);
-        imgBack = new Texture("space.jpg");
+        imgBack = new Texture("textures/space.jpg");
 
         background = new StarSky(new TextureRegion(imgBack));
         ship = new StarShip(new TextureRegion(imgShip));
