@@ -1,20 +1,33 @@
 package s.yarlykov.screen;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
 
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
 import s.yarlykov.sprite.Background;
+import s.yarlykov.sprite.MainShip;
+import s.yarlykov.sprite.Star;
 
 public class GameScreen extends Base2DScreen {
 
     private Background background;
     private Texture backgroundTexture;
+    private Texture mainShipTexture;
     private TextureAtlas atlas;
+    private MainShip mainShip;
+
+    private Game game;
+
+    public GameScreen(Game game) {
+        this.game = game;
+    }
 
     @Override
     public void show() {
@@ -22,12 +35,17 @@ public class GameScreen extends Base2DScreen {
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
+        mainShipTexture = atlas.findRegion("main_ship").getTexture();
+        mainShip = new MainShip(new TextureRegion[]{
+                new TextureRegion(mainShipTexture, 917, 96, 194, 287),
+                new TextureRegion(mainShipTexture, 1112, 96, 194, 287)});
     }
 
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
         background.resize(worldBounds);
+        mainShip.resize(worldBounds);
     }
 
     @Override
@@ -38,7 +56,6 @@ public class GameScreen extends Base2DScreen {
     }
 
     private void update(float delta) {
-
     }
 
     private void draw() {
@@ -46,13 +63,26 @@ public class GameScreen extends Base2DScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
+        mainShip.draw(batch);
         batch.end();
     }
 
     @Override
     public void dispose() {
         backgroundTexture.dispose();
-        atlas.dispose();
+        mainShipTexture.dispose();
         super.dispose();
+    }
+
+    @Override
+    public boolean touchDown(Vector2 touch, int pointer) {
+        mainShip.touchDown(touch, pointer);
+        return false;
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        System.out.println("MotionScreen3: keyDown " + keycode);
+        return mainShip.keyDown(keycode);
     }
 }

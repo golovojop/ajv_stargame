@@ -1,10 +1,7 @@
 package s.yarlykov.sprite;
 
-import com.badlogic.gdx.Application;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.base.Sprite;
@@ -12,30 +9,27 @@ import s.yarlykov.math.Rect;
 
 import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
-public class StarShip extends Sprite {
-    private static float V_LEN = 0.004f;
+public class MainShip extends Sprite {
 
-    private TextureRegion region;
-    private Vector2 touch;
-    private Vector2 pos;
+    private static float V_LEN = 0.004f;
+    private TextureRegion[] regions;
+    private Vector2 touchTarget;
     private Vector2 buf;
     private Vector2 v;
 
-    public StarShip(TextureRegion region) {
-        super(region);
+    public MainShip(TextureRegion[] region) {
+        super(region[1]);
 
-        setSize(WORLD_SCALE/7, WORLD_SCALE/7);
-        this.touch = new Vector2();
+        this.touchTarget = new Vector2();
         this.buf = new Vector2();
         this.v = new Vector2();
-        this.region = region;
-        this.pos = super.pos;
+        this.regions = regions;
     }
 
     public void update() {
-        buf.set(touch);
+        buf.set(touchTarget);
         if (buf.sub(pos).len() <= V_LEN) {
-            pos.set(touch);
+            pos.set(touchTarget);
         } else {
             pos.add(v);
         }
@@ -49,12 +43,15 @@ public class StarShip extends Sprite {
     @Override
     public void resize(Rect worldBounds) {
         setHeightProportion(worldBounds.getHeight());
+        // Отрисовать корабль в центре окна
         pos.set(worldBounds.pos);
+        // Установить размер корабля 1/10 экрана world
+        setSize(worldBounds.getWidth()/10, worldBounds.getHeight()/10);
     }
 
-    public boolean touchDown(Vector2 _touch, int pointer) {
-        this.touch = _touch;
-        v.set(touch.cpy().sub(pos)).setLength(V_LEN);
+    public boolean touchDown(Vector2 touch, int pointer) {
+        this.touchTarget = touch;
+        v.set(touchTarget.cpy().sub(pos)).setLength(V_LEN);
         return false;
     }
 
@@ -85,9 +82,12 @@ public class StarShip extends Sprite {
         }
 
         // Фиктивная целевая точка, чтобы сдвинуть фигурку, если она неподвижна
-        touch.set(WORLD_SCALE, WORLD_SCALE);
+        touchTarget.set(WORLD_SCALE, WORLD_SCALE);
         v.set(direct).setLength(V_LEN);
         update();
         return true;
     }
+
+
+
 }

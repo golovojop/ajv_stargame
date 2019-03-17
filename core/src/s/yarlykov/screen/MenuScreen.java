@@ -17,7 +17,9 @@ import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
 import s.yarlykov.sprite.Background;
 import s.yarlykov.sprite.ButtonExit;
+import s.yarlykov.sprite.ButtonOptions;
 import s.yarlykov.sprite.ButtonPlay;
+import s.yarlykov.sprite.Logo;
 import s.yarlykov.sprite.Star;
 
 import com.badlogic.gdx.Game;
@@ -31,11 +33,15 @@ public class MenuScreen extends Base2DScreen {
 
     private Texture backgroundTexture;
     private Background background;
+
     private TextureAtlas atlas;
+    private TextureAtlas buttons;
     private Star starList[];
 
     private ButtonExit buttonExit;
     private ButtonPlay buttonPlay;
+    private ButtonOptions buttonOptions;
+    private Logo logo;
 
     public MenuScreen(Game game) {
         this.game = game;
@@ -47,12 +53,15 @@ public class MenuScreen extends Base2DScreen {
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
+        buttons = new TextureAtlas("textures/buttonsMenu.pack");
         starList = new Star[STAR_COUNT];
         for (int i = 0; i < starList.length; i++) {
             starList[i] = new Star(atlas);
         }
-        buttonExit = new ButtonExit(atlas);
-        buttonPlay = new ButtonPlay(atlas, game);
+        buttonPlay = new ButtonPlay(buttons, game);
+        buttonExit = new ButtonExit(buttons);
+        buttonOptions = new ButtonOptions(buttons, game);
+        logo = new Logo(buttons);
 
     }
 
@@ -63,8 +72,10 @@ public class MenuScreen extends Base2DScreen {
         for (Star star : starList) {
             star.resize(worldBounds);
         }
-        buttonExit.resize(worldBounds);
         buttonPlay.resize(worldBounds);
+        buttonExit.resize(worldBounds);
+        buttonOptions.resize(worldBounds);
+        logo.resize(worldBounds);
     }
 
     @Override
@@ -89,8 +100,10 @@ public class MenuScreen extends Base2DScreen {
         for (Star star : starList) {
             star.draw(batch);
         }
-        buttonExit.draw(batch);
         buttonPlay.draw(batch);
+        buttonExit.draw(batch);
+        buttonOptions.draw(batch);
+        logo.draw(batch);
         batch.end();
     }
 
@@ -103,15 +116,17 @@ public class MenuScreen extends Base2DScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        buttonExit.touchDown(touch, pointer);
         buttonPlay.touchDown(touch, pointer);
+        buttonExit.touchDown(touch, pointer);
+        buttonOptions.touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        buttonExit.touchUp(touch, pointer);
         buttonPlay.touchUp(touch, pointer);
+        buttonExit.touchUp(touch, pointer);
+        buttonOptions.touchUp(touch, pointer);
         return false;
     }
 }
