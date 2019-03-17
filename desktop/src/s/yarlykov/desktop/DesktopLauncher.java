@@ -15,7 +15,7 @@ public class DesktopLauncher {
          * Отключить resize
          */
         float aspect = 3f/4f;
-        config.width = 400;
+        config.width = 600;
         config.height = (int) (config.width / aspect);
         config.resizable = false;
 
