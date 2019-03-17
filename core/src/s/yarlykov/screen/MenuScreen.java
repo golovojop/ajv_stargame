@@ -8,6 +8,7 @@
 package s.yarlykov.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -19,6 +20,7 @@ import s.yarlykov.sprite.Background;
 import s.yarlykov.sprite.ButtonExit;
 import s.yarlykov.sprite.ButtonOptions;
 import s.yarlykov.sprite.ButtonPlay;
+import s.yarlykov.sprite.FlyingShip;
 import s.yarlykov.sprite.Logo;
 import s.yarlykov.sprite.Star;
 
@@ -36,12 +38,15 @@ public class MenuScreen extends Base2DScreen {
 
     private TextureAtlas atlas;
     private TextureAtlas buttons;
+    private TextureAtlas flyLogo;
     private Star starList[];
+    private Sound sound;
 
     private ButtonExit buttonExit;
     private ButtonPlay buttonPlay;
     private ButtonOptions buttonOptions;
     private Logo logo;
+    private FlyingShip flyingShip;
 
     public MenuScreen(Game game) {
         this.game = game;
@@ -54,6 +59,9 @@ public class MenuScreen extends Base2DScreen {
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
         buttons = new TextureAtlas("textures/buttonsMenu.pack");
+        flyLogo = new TextureAtlas("textures/animation/animation.pack");
+
+        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/terminator.mp3"));
         starList = new Star[STAR_COUNT];
         for (int i = 0; i < starList.length; i++) {
             starList[i] = new Star(atlas);
@@ -62,6 +70,9 @@ public class MenuScreen extends Base2DScreen {
         buttonExit = new ButtonExit(buttons);
         buttonOptions = new ButtonOptions(buttons, game);
         logo = new Logo(buttons);
+        flyingShip = new FlyingShip(flyLogo);
+        sound.loop();
+
 
     }
 
@@ -75,6 +86,7 @@ public class MenuScreen extends Base2DScreen {
         buttonPlay.resize(worldBounds);
         buttonExit.resize(worldBounds);
         buttonOptions.resize(worldBounds);
+        flyingShip.resize(worldBounds);
         logo.resize(worldBounds);
     }
 
@@ -91,7 +103,6 @@ public class MenuScreen extends Base2DScreen {
         }
     }
 
-
     private void draw() {
         Gdx.gl.glClearColor(0.51f, 0.34f, 0.64f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
@@ -104,6 +115,7 @@ public class MenuScreen extends Base2DScreen {
         buttonExit.draw(batch);
         buttonOptions.draw(batch);
         logo.draw(batch);
+        flyingShip.draw(batch);
         batch.end();
     }
 

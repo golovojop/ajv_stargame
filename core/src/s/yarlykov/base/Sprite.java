@@ -14,7 +14,7 @@ public class Sprite extends Rect {
     public final static int ARROW_LEFT = 21;
     public final static int ARROW_RIGHT = 22;
 
-    private TextureRegion[] regions;
+    protected TextureRegion[] regions;
     private float angle = 0f;
     private float scale = 1f;
     private int frame = 0;
