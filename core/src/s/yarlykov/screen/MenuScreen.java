@@ -72,8 +72,6 @@ public class MenuScreen extends Base2DScreen {
         logo = new Logo(buttons);
         flyingShip = new FlyingShip(flyLogo);
         sound.loop();
-
-
     }
 
     @Override
