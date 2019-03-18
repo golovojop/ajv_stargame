@@ -20,7 +20,7 @@ import s.yarlykov.sprite.Background;
 import s.yarlykov.sprite.ButtonExit;
 import s.yarlykov.sprite.ButtonOptions;
 import s.yarlykov.sprite.ButtonPlay;
-import s.yarlykov.sprite.FlyingShip;
+import s.yarlykov.sprite.LogoShip;
 import s.yarlykov.sprite.Logo;
 import s.yarlykov.sprite.Star;
 
@@ -46,7 +46,7 @@ public class MenuScreen extends Base2DScreen {
     private ButtonPlay buttonPlay;
     private ButtonOptions buttonOptions;
     private Logo logo;
-    private FlyingShip flyingShip;
+    private LogoShip flyingShip;
 
     public MenuScreen(Game game) {
         this.game = game;
@@ -70,7 +70,7 @@ public class MenuScreen extends Base2DScreen {
         buttonExit = new ButtonExit(buttons);
         buttonOptions = new ButtonOptions(buttons, game);
         logo = new Logo(buttons);
-        flyingShip = new FlyingShip(flyLogo);
+        flyingShip = new LogoShip(flyLogo);
         sound.loop();
     }
 
