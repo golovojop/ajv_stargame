@@ -51,16 +51,8 @@ public class MenuScreen2 extends Base2DScreen {
     }
 
     @Override
-    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println("MenuScreen2: touchDown");
-        System.out.println("Mouse.X = " + screenX + " Mouse.Y = " + screenY);
-
-        touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
-
-        /**
-         * Вектор скорости нужно задавать в координатах world
-         */
+    public boolean touchDown(Vector2 touch, int pointer) {
         v.set(touch.cpy().sub(pos)).setLength(V_LEN);
-        return super.touchDown(screenX, screenY, pointer, button);
+        return false;
     }
 }

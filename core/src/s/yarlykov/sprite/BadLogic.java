@@ -10,13 +10,13 @@ public class BadLogic extends Sprite {
 
     private static float V_LEN = 0.006f;
 
-    private Vector2 pos;
     private Vector2 touch;
-    private Vector2 v;
+    private Vector2 pos;
     private Vector2 buf;
+    private Vector2 v;
 
     public BadLogic(TextureRegion region) {
-        super(region, null);
+        super(region);
         setSize(0.5f, 0.5f);
         this.pos = new Vector2();
         touch = new Vector2();

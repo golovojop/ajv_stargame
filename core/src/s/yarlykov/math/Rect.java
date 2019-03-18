@@ -107,6 +107,10 @@ public class Rect {
         this.halfHeight = height / 2f;
     }
 
+    public Rect getScaled(float scale) {
+        return new Rect(pos.x * scale, pos.y * scale, getHalfWidth() * scale, getHalfHeight() * scale);
+    }
+
     // Проверка: Вектор touch попадает в мой прямоугольник
     public boolean isMe(Vector2 touch) {
         return touch.x >= getLeft() && touch.x <= getRight() && touch.y >= getBottom() && touch.y <= getTop();
