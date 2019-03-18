@@ -8,6 +8,7 @@
 package s.yarlykov.screen;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -40,7 +41,8 @@ public class MenuScreen extends Base2DScreen {
     private TextureAtlas buttons;
     private TextureAtlas flyLogo;
     private Star starList[];
-    private Sound sound;
+//    private Sound sound;
+    private Music music;
 
     private ButtonExit buttonExit;
     private ButtonPlay buttonPlay;
@@ -61,7 +63,8 @@ public class MenuScreen extends Base2DScreen {
         buttons = new TextureAtlas("textures/buttonsMenu.pack");
         flyLogo = new TextureAtlas("textures/animation/animation.pack");
 
-        sound = Gdx.audio.newSound(Gdx.files.internal("sounds/terminator.mp3"));
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/terminator.mp3"));
+        music.setLooping(true);
         starList = new Star[STAR_COUNT];
         for (int i = 0; i < starList.length; i++) {
             starList[i] = new Star(atlas);
@@ -71,7 +74,7 @@ public class MenuScreen extends Base2DScreen {
         buttonOptions = new ButtonOptions(buttons, game);
         logo = new Logo(buttons);
         flyingShip = new LogoShip(flyLogo);
-        sound.loop();
+        music.play();
     }
 
     @Override
@@ -119,7 +122,9 @@ public class MenuScreen extends Base2DScreen {
 
     @Override
     public void dispose() {
+        music.stop();
         backgroundTexture.dispose();
+        music.dispose();
         atlas.dispose();
         super.dispose();
     }
