@@ -56,6 +56,7 @@ public class GameScreen extends Base2DScreen {
     }
 
     private void update(float delta) {
+        mainShip.update(delta);
     }
 
     private void draw() {
@@ -82,7 +83,13 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public boolean keyDown(int keycode) {
-        System.out.println("MotionScreen3: keyDown " + keycode);
-        return mainShip.keyDown(keycode);
+        mainShip.keyDown(keycode);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        mainShip.keyUp(keycode);
+        return false;
     }
 }

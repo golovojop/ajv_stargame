@@ -41,7 +41,6 @@ public class MenuScreen extends Base2DScreen {
     private TextureAtlas buttons;
     private TextureAtlas flyLogo;
     private Star starList[];
-//    private Sound sound;
     private Music music;
 
     private ButtonExit buttonExit;
