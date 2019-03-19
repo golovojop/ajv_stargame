@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.math.Rect;
+import s.yarlykov.utils.Regions;
 
 public class Sprite extends Rect {
 
@@ -23,6 +24,10 @@ public class Sprite extends Rect {
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
         this.regions[0] = region;
+    }
+
+    public Sprite(TextureRegion region, int rows, int cols, int frames) {
+        this.regions = Regions.split(region, rows, cols, frames);
     }
 
     /**
