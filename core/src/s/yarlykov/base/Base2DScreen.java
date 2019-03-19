@@ -131,7 +131,7 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-        System.out.println("touchDown screenX = " + screenX + " screenY = " + screenY);
+        System.out.println("touchDown screenX = " + screenX + " screenY = " + screenY + " pointer = " + pointer + " button = " + button);
         /**
          * Координаты тача нужно сконвертировать в world
          */
@@ -147,7 +147,7 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     @Override
     public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-        System.out.println("touchUp screenX = " + screenX + " screenY = " + screenY);
+        System.out.println("touchUp screenX = " + screenX + " screenY = " + screenY + " pointer = " + pointer + " button = " + button);
         touch.set(screenX, Gdx.graphics.getHeight() - screenY).mul(screenToWorld);
         /**
          * Координаты тача нужно сконвертировать в world

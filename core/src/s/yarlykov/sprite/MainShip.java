@@ -2,6 +2,7 @@ package s.yarlykov.sprite;
 
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
@@ -12,7 +13,7 @@ import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
 public class MainShip extends Sprite {
     private static float V_LEN = 0.6f;
-    private static final int NOT_TOUCHED = -1;
+    private static final int NOT_TOUCHED = -100;
     private boolean isPressedRight;
     private boolean isPressedLeft;
 
@@ -23,9 +24,7 @@ public class MainShip extends Sprite {
     private int leftPointer = NOT_TOUCHED;
     private int rightPointer = NOT_TOUCHED;
 
-    private TextureRegion[] regions;
-    private Vector2 touchTarget;
-    private Vector2 buf;
+    private TextureAtlas atlas;
 
     public MainShip(TextureRegion[] region) {
         super(region[1]);
@@ -35,6 +34,27 @@ public class MainShip extends Sprite {
         this.regions = regions;
     }
 
+    public MainShip(TextureAtlas atlas) {
+        // Регион "main_ship" содержит два корабля. Нужно разделить корабли
+        // по отдельным регионам
+        super(atlas.findRegion("main_ship"), 1, 2, 2);
+        this.atlas = atlas;
+        setHeightProportion(0.15f);
+    }
+
+    @Override
+    public void resize(Rect worldBounds) {
+        this.worldBounds = worldBounds;
+        // Отрисовать корабль по центру внизу с отступом 0.02f
+        pos.set(worldBounds.pos.x, worldBounds.getBottom() + halfHeight + 0.03f);
+    }
+
+    @Override
+    public void draw(SpriteBatch batch) {
+        super.draw(batch);
+    }
+
+    @Override
     public void update(float delta) {
         pos.mulAdd(v, delta);
         if (getRight() > worldBounds.getRight()) {
@@ -47,17 +67,6 @@ public class MainShip extends Sprite {
         }
     }
 
-    public void draw(SpriteBatch batch) {
-        super.draw(batch);
-    }
-
-    @Override
-    public void resize(Rect worldBounds) {
-        this.worldBounds = worldBounds;
-        // Отрисовать корабль по центру внизу с отступом 0.02f
-        pos.set(worldBounds.pos.x, worldBounds.getBottom() + halfHeight + 0.02f);
-    }
-
     /**
      * Методы для работы с тачпадом. Тачпад визуально делится вертикально
      * пополам. Далее делается проверка в какой половине произошел тач.
@@ -67,7 +76,6 @@ public class MainShip extends Sprite {
      * public boolean touchDown(Vector2 touch, int pointer)
      * public boolean touchUp(Vector2 touch, int pointer)
      */
-
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         if (touch.x < worldBounds.pos.x) {
@@ -139,7 +147,6 @@ public class MainShip extends Sprite {
      * нажатой, то направление меняется. Если противиположная
      * клавиша не удерживается, то останов.
      */
-
     public void keyUp(int keycode) {
         switch (keycode) {
             case Input.Keys.LEFT:

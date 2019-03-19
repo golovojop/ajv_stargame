@@ -29,8 +29,7 @@ public class LogoShip extends Sprite {
                        }
                 ,0,1/30.0f);
 
-        setHeightProportion(0.2f);
-        setScale(1.2f);
+        setHeightProportion(0.25f);
     }
 
     @Override

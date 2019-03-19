@@ -36,9 +36,8 @@ public class GameScreen extends Base2DScreen {
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
         mainShipTexture = atlas.findRegion("main_ship").getTexture();
-        mainShip = new MainShip(new TextureRegion[]{
-                new TextureRegion(mainShipTexture, 917, 96, 194, 287),
-                new TextureRegion(mainShipTexture, 1112, 96, 194, 287)});
+
+        mainShip = new MainShip(atlas);
     }
 
     @Override
@@ -80,6 +79,13 @@ public class GameScreen extends Base2DScreen {
         mainShip.touchDown(touch, pointer);
         return false;
     }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        mainShip.touchUp(touch, pointer);
+        return false;
+    }
+
 
     @Override
     public boolean keyDown(int keycode) {
