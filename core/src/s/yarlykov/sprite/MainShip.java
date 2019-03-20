@@ -54,9 +54,25 @@ public class MainShip extends Sprite {
         super.draw(batch);
     }
 
+    /**
+     * mulAdd(Vector2 v, float delta)
+     *
+     * From
+     * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Vector2.java
+     *
+     * @Override
+     * 	public Vector2 mulAdd (Vector2 vec, float scalar) {
+     * 		this.x += vec.x * scalar;
+     * 		this.y += vec.y * scalar;
+     * 		return this;
+     * 	}
+     */
+
     @Override
     public void update(float delta) {
-        pos.mulAdd(v, delta);
+//        pos.mulAdd(v, delta);
+        pos.add(v);
+
         if (getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
             stop();
