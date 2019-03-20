@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
 import s.yarlykov.sprite.Background;
+import s.yarlykov.sprite.EnemyShip;
 import s.yarlykov.sprite.MainShip;
 import s.yarlykov.sprite.Star;
 
@@ -19,9 +20,9 @@ public class GameScreen extends Base2DScreen {
 
     private Background background;
     private Texture backgroundTexture;
-    private Texture mainShipTexture;
     private TextureAtlas atlas;
     private MainShip mainShip;
+    private EnemyShip enemyShip;
 
     private Game game;
 
@@ -35,9 +36,23 @@ public class GameScreen extends Base2DScreen {
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
-        mainShipTexture = atlas.findRegion("main_ship").getTexture();
 
-        mainShip = new MainShip(atlas);
+        enemyShip = new EnemyShip(atlas);
+        mainShip = new MainShip(atlas, "main_ship");
+
+        enemyShip.set("enemy0",
+                1,
+                2,
+                2,
+                0.15f,
+                new Vector2(),
+                new Vector2(),
+                new Vector2(),
+                1000,
+                1,
+                100f,
+                100f,
+                500f);
     }
 
     @Override
@@ -45,6 +60,7 @@ public class GameScreen extends Base2DScreen {
         super.resize(worldBounds);
         background.resize(worldBounds);
         mainShip.resize(worldBounds);
+        enemyShip.resize(worldBounds);
     }
 
     @Override
@@ -64,13 +80,13 @@ public class GameScreen extends Base2DScreen {
         batch.begin();
         background.draw(batch);
         mainShip.draw(batch);
+        enemyShip.draw(batch);
         batch.end();
     }
 
     @Override
     public void dispose() {
         backgroundTexture.dispose();
-        mainShipTexture.dispose();
         super.dispose();
     }
 

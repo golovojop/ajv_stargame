@@ -21,6 +21,9 @@ public class Sprite extends Rect {
     private int frame = 0;
     private boolean isDestroyed;
 
+    public Sprite() {
+    }
+
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
         this.regions[0] = region;

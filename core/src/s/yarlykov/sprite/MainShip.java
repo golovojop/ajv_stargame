@@ -26,18 +26,11 @@ public class MainShip extends Sprite {
 
     private TextureAtlas atlas;
 
-    public MainShip(TextureRegion[] region) {
-        super(region[1]);
-        // Установить размер корабля в пропорции 0.15 от экрана
-        setHeightProportion(0.15f);
 
-        this.regions = regions;
-    }
-
-    public MainShip(TextureAtlas atlas) {
+    public MainShip(TextureAtlas atlas, String region) {
         // Регион "main_ship" содержит два корабля. Нужно разделить корабли
         // по отдельным регионам
-        super(atlas.findRegion("main_ship"), 1, 2, 2);
+        super(atlas.findRegion(region), 1, 2, 2);
         this.atlas = atlas;
         setHeightProportion(0.15f);
     }
@@ -70,8 +63,7 @@ public class MainShip extends Sprite {
 
     @Override
     public void update(float delta) {
-//        pos.mulAdd(v, delta);
-        pos.add(v);
+        pos.mulAdd(v, delta);
 
         if (getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
