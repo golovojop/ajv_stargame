@@ -6,12 +6,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
 
 import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
-public class MainShip extends Sprite {
+public class MainShip extends Ship {
     private static float V_LEN = 0.6f;
     private static final int NOT_TOUCHED = -100;
     private boolean isPressedRight;
@@ -178,17 +179,17 @@ public class MainShip extends Sprite {
         }
     }
 
-    private void shoot(){}
+    protected void shoot(){}
 
-    private void moveRight() {
+    protected void moveRight() {
         v.set(v0);
     }
 
-    private void moveLeft() {
+    protected void moveLeft() {
         v.set(v0).rotate(180);
     }
 
-    private void stop() {
+    protected void stop() {
         v.setZero();
     }
 }
