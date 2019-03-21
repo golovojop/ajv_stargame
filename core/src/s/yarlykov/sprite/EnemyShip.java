@@ -5,15 +5,17 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
 import s.yarlykov.utils.Regions;
 
-public class EnemyShip extends Sprite {
+public class EnemyShip extends Ship {
 
     private TextureAtlas atlas;
     private float heightProp;
     private Vector2 pos0;
+    private Vector2 v;
     private Vector2 vS;
     private Vector2 vB;
     private Vector2 direction;
@@ -22,6 +24,7 @@ public class EnemyShip extends Sprite {
     private float damage;
     private float armor;
     private float health;
+    private Rect worldBounds;
 
     public EnemyShip(TextureAtlas atlas) {
         this.atlas = atlas;
@@ -50,6 +53,7 @@ public class EnemyShip extends Sprite {
         this.armor = armor;
         this.damage = damage;
         this.health = health;
+        this.v = vS.cpy();
 
         regions = Regions.split(atlas.findRegion(region), rows, cols, frames);
     }
@@ -57,6 +61,7 @@ public class EnemyShip extends Sprite {
     @Override
     public void resize(Rect worldBounds) {
         setHeightProportion(heightProp);
+        this.worldBounds = worldBounds;
 
         // Отрисовать корабль вверху с отступом 0.03f
         pos.set(pos0.x, worldBounds.getTop() - halfHeight - 0.03f);
@@ -66,5 +71,31 @@ public class EnemyShip extends Sprite {
         super.draw(batch);
     }
 
+    @Override
+    public void update(float delta) {
+        pos.mulAdd(v, delta);
 
+        if (getRight() > worldBounds.getRight()) {
+            setRight(worldBounds.getRight());
+            moveLeft();
+        }
+        if (getLeft() < worldBounds.getLeft()) {
+            setLeft(worldBounds.getLeft());
+            moveRight();
+        }
+    }
+
+    protected void shoot(){}
+
+    protected void moveRight() {
+        v.set(vS);
+    }
+
+    protected void moveLeft() {
+        v.set(vS).rotate(180);
+    }
+
+    protected void stop() {
+        v.setZero();
+    }
 }

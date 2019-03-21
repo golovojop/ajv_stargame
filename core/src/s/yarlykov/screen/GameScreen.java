@@ -46,7 +46,7 @@ public class GameScreen extends Base2DScreen {
                 2,
                 0.15f,
                 new Vector2(),
-                new Vector2(),
+                new Vector2(0.4f, 0),
                 new Vector2(),
                 1000,
                 1,
@@ -71,7 +71,9 @@ public class GameScreen extends Base2DScreen {
     }
 
     private void update(float delta) {
+
         mainShip.update(delta);
+        enemyShip.update(delta);
     }
 
     private void draw() {
