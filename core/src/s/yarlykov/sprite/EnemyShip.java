@@ -38,7 +38,7 @@ public class EnemyShip extends Sprite {
                     int bullets,        //  Количество пуль
                     int lives,          //  Кол-во жизней
                     float armor,        //  Защита
-                    float damage,       //  Мощность выстрелов
+                    float damage,       //  Мощность выстрелов ??
                     float health) {     //  Текущее здоровье
 
         this.heightProp = heightProp;
