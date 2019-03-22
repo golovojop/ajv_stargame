@@ -7,13 +7,13 @@ import com.badlogic.gdx.utils.Timer;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
 
-public class FlyingShip extends Sprite {
+public class LogoShip extends Sprite {
     private int currentFrame = 1;
     private int minFrame = 1;
     private int maxFrame = 7;
     private String atlasKey = "anim";
 
-    public FlyingShip(final TextureAtlas atlas) {
+    public LogoShip(final TextureAtlas atlas) {
         super(atlas.findRegion("anim01"));
 
         Timer.schedule(new Timer.Task(){
@@ -29,8 +29,7 @@ public class FlyingShip extends Sprite {
                        }
                 ,0,1/30.0f);
 
-        setHeightProportion(0.2f);
-        setScale(1.2f);
+        setHeightProportion(0.25f);
     }
 
     @Override

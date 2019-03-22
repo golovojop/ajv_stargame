@@ -12,6 +12,7 @@ import com.badlogic.gdx.utils.Array;
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
 import s.yarlykov.sprite.Background;
+import s.yarlykov.sprite.EnemyShip;
 import s.yarlykov.sprite.MainShip;
 import s.yarlykov.sprite.Star;
 
@@ -19,9 +20,9 @@ public class GameScreen extends Base2DScreen {
 
     private Background background;
     private Texture backgroundTexture;
-    private Texture mainShipTexture;
     private TextureAtlas atlas;
     private MainShip mainShip;
+    private EnemyShip enemyShip;
 
     private Game game;
 
@@ -35,10 +36,23 @@ public class GameScreen extends Base2DScreen {
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
-        mainShipTexture = atlas.findRegion("main_ship").getTexture();
-        mainShip = new MainShip(new TextureRegion[]{
-                new TextureRegion(mainShipTexture, 917, 96, 194, 287),
-                new TextureRegion(mainShipTexture, 1112, 96, 194, 287)});
+
+        enemyShip = new EnemyShip(atlas);
+        mainShip = new MainShip(atlas, "main_ship");
+
+        enemyShip.set("enemy0",
+                1,
+                2,
+                2,
+                0.15f,
+                new Vector2(),
+                new Vector2(0.4f, 0),
+                new Vector2(),
+                1000,
+                1,
+                100f,
+                100f,
+                500f);
     }
 
     @Override
@@ -46,6 +60,7 @@ public class GameScreen extends Base2DScreen {
         super.resize(worldBounds);
         background.resize(worldBounds);
         mainShip.resize(worldBounds);
+        enemyShip.resize(worldBounds);
     }
 
     @Override
@@ -56,6 +71,9 @@ public class GameScreen extends Base2DScreen {
     }
 
     private void update(float delta) {
+
+        mainShip.update(delta);
+        enemyShip.update(delta);
     }
 
     private void draw() {
@@ -64,13 +82,13 @@ public class GameScreen extends Base2DScreen {
         batch.begin();
         background.draw(batch);
         mainShip.draw(batch);
+        enemyShip.draw(batch);
         batch.end();
     }
 
     @Override
     public void dispose() {
         backgroundTexture.dispose();
-        mainShipTexture.dispose();
         super.dispose();
     }
 
@@ -81,8 +99,21 @@ public class GameScreen extends Base2DScreen {
     }
 
     @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        mainShip.touchUp(touch, pointer);
+        return false;
+    }
+
+
+    @Override
     public boolean keyDown(int keycode) {
-        System.out.println("MotionScreen3: keyDown " + keycode);
-        return mainShip.keyDown(keycode);
+        mainShip.keyDown(keycode);
+        return false;
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        mainShip.keyUp(keycode);
+        return false;
     }
 }
