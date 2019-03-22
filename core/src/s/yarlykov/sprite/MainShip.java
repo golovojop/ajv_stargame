@@ -179,7 +179,7 @@ public class MainShip extends Ship {
         }
     }
 
-    protected void shoot(){}
+    public void shoot(){}
 
     protected void moveRight() {
         v.set(v0);

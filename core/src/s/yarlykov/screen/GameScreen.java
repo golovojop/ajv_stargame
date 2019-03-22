@@ -11,10 +11,13 @@ import com.badlogic.gdx.utils.Array;
 
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
+import s.yarlykov.pool.BulletPool;
+import s.yarlykov.pool.EnemyPool;
 import s.yarlykov.sprite.Background;
 import s.yarlykov.sprite.EnemyShip;
 import s.yarlykov.sprite.MainShip;
 import s.yarlykov.sprite.Star;
+import s.yarlykov.utils.EnemiesEmitter;
 
 public class GameScreen extends Base2DScreen {
 
@@ -22,7 +25,11 @@ public class GameScreen extends Base2DScreen {
     private Texture backgroundTexture;
     private TextureAtlas atlas;
     private MainShip mainShip;
-    private EnemyShip enemyShip;
+    private BulletPool bulletPool;
+    private EnemyPool enemyPool;
+    private EnemiesEmitter enemiesEmitter;
+    private Texture mainShipTexture;
+
 
     private Game game;
 
@@ -37,22 +44,12 @@ public class GameScreen extends Base2DScreen {
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/mainAtlas.tpack");
 
-        enemyShip = new EnemyShip(atlas);
+        bulletPool = new BulletPool();
+        enemyPool = new EnemyPool(bulletPool, worldBounds, null);
+        enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
+        mainShipTexture = atlas.findRegion("main_ship").getTexture();
         mainShip = new MainShip(atlas, "main_ship");
 
-        enemyShip.set("enemy0",
-                1,
-                2,
-                2,
-                0.15f,
-                new Vector2(),
-                new Vector2(0.4f, 0),
-                new Vector2(),
-                1000,
-                1,
-                100f,
-                100f,
-                500f);
     }
 
     @Override
@@ -60,7 +57,6 @@ public class GameScreen extends Base2DScreen {
         super.resize(worldBounds);
         background.resize(worldBounds);
         mainShip.resize(worldBounds);
-        enemyShip.resize(worldBounds);
     }
 
     @Override
@@ -71,9 +67,10 @@ public class GameScreen extends Base2DScreen {
     }
 
     private void update(float delta) {
-
         mainShip.update(delta);
-        enemyShip.update(delta);
+        bulletPool.updateAllActive(delta);
+        enemyPool.updateAllActive(delta);
+        enemiesEmitter.generate(delta);
     }
 
     private void draw() {
@@ -82,13 +79,16 @@ public class GameScreen extends Base2DScreen {
         batch.begin();
         background.draw(batch);
         mainShip.draw(batch);
-        enemyShip.draw(batch);
+        bulletPool.drawAllActive(batch);
+        enemyPool.drawAllActive(batch);
         batch.end();
     }
 
     @Override
     public void dispose() {
         backgroundTexture.dispose();
+        bulletPool.dispose();
+        enemyPool.dispose();
         super.dispose();
     }
 
