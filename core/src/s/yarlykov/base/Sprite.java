@@ -19,7 +19,7 @@ public class Sprite extends Rect {
     private float angle = 0f;
     private float scale = 1f;
     private int frame = 0;
-    private boolean isDestroyed;
+    protected boolean isDestroyed;
 
     public Sprite() {
     }

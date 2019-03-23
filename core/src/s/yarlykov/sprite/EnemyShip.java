@@ -35,8 +35,7 @@ public class EnemyShip extends Ship {
      *     protected int damage;
      */
 
-    private Vector2 velDescent = new Vector2(0, -0.15f);
-    private float heightProp;
+    private Vector2 velDescent = new Vector2(0, -0.02f);
     private State state;
 
     public EnemyShip(BulletPool bulletPool, Rect worldBounds) {
@@ -45,27 +44,29 @@ public class EnemyShip extends Ship {
     }
 
     public void set(TextureRegion[] regions,    //  Картинки корабля
-                    float heightProp,           //  Пропорция отрисовки
+                    float heightProp,           //  Пропорция отрисовки корабля
                     TextureRegion regionBullet, //  Картинка пули
+                    float bulletHeight,         //  Пропорция отрисовки пули
                     Vector2 velShip,            //  Скорость корабля
-                    float velBullet,          //  Скорость пули корабля
+                    float velBullet,            //  Скорость пули
                     float reloadInterval,
                     int armor,                  //  Защита
-                    int damage,                 //  Мощность выстрелов ??
+                    int damage,                 //  Мощность выстрелов
                     int health) {               //  Текущее здоровье
 
-        this.regionsShip = regions;
-        this.heightProp = heightProp;
+        this.regions = regions;
         this.velShip = velShip;
-        this.regionBullet = regionBullet;
-        this.velBullet.set(0, velBullet);
         this.velCurrent.set(velDescent);
+        this.regionBullet = regionBullet;
+        this.bulletHeight = bulletHeight;
+        this.velBullet.set(0, velBullet);
         this.reloadInterval = reloadInterval;
         this.armor = armor;
         this.damage = damage;
         this.health = health;
-        this.regions = regions;
-        state = State.DESCENT;
+        this.state = State.DESCENT;
+        isDestroyed = false;
+        setHeightProportion(heightProp);
     }
 
     @Override

@@ -1,6 +1,7 @@
 package s.yarlykov.sprite;
 
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -9,6 +10,7 @@ import com.badlogic.gdx.math.Vector2;
 import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
+import s.yarlykov.pool.BulletPool;
 
 import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
@@ -18,27 +20,27 @@ public class MainShip extends Ship {
     private boolean isPressedRight;
     private boolean isPressedLeft;
 
-    private Vector2 v = new Vector2();
-    private Vector2 v0 = new Vector2(V_LEN, 0);
-    private Rect worldBounds;
-
     private int leftPointer = NOT_TOUCHED;
     private int rightPointer = NOT_TOUCHED;
 
     private TextureAtlas atlas;
 
-
-    public MainShip(TextureAtlas atlas, String region) {
+    public MainShip(TextureAtlas atlas, String region, BulletPool bulletPool, Sound shootSound) {
         // Регион "main_ship" содержит два корабля. Нужно разделить корабли
         // по отдельным регионам
         super(atlas.findRegion(region), 1, 2, 2);
         this.atlas = atlas;
-        setHeightProportion(0.15f);
+        this.bulletPool = bulletPool;
+        this.regionBullet = atlas.findRegion("bulletMainShip");
+        this.bulletHeight = 0.01f;
+        this.velBullet.set(0, 0.5f);        setHeightProportion(0.15f);
+        this.velShip = new Vector2(V_LEN, 0);
+        this.reloadInterval = 0.2f;
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        this.worldBounds = worldBounds;
+        super.resize(worldBounds);
         // Отрисовать корабль по центру внизу с отступом 0.02f
         pos.set(worldBounds.pos.x, worldBounds.getBottom() + halfHeight + 0.03f);
     }
@@ -64,7 +66,12 @@ public class MainShip extends Ship {
 
     @Override
     public void update(float delta) {
-        pos.mulAdd(v, delta);
+        super.update(delta);
+        reloadTimer += delta;
+        if (reloadTimer >= reloadInterval) {
+            reloadTimer = 0f;
+            shoot();
+        }
 
         if (getRight() > worldBounds.getRight()) {
             setRight(worldBounds.getRight());
@@ -179,17 +186,17 @@ public class MainShip extends Ship {
         }
     }
 
-    public void shoot(){}
+//    public void shoot(){}
 
     protected void moveRight() {
-        v.set(v0);
+        velCurrent.set(velShip);
     }
 
     protected void moveLeft() {
-        v.set(v0).rotate(180);
+        velCurrent.set(velShip).rotate(180);
     }
 
     protected void stop() {
-        v.setZero();
+        velCurrent.setZero();
     }
 }

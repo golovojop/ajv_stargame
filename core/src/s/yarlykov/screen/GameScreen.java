@@ -42,14 +42,13 @@ public class GameScreen extends Base2DScreen {
         super.show();
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
-        atlas = new TextureAtlas("textures/mainAtlas.tpack");
+        atlas = new TextureAtlas("textures/mainAtlas.pack");
 
         bulletPool = new BulletPool();
         enemyPool = new EnemyPool(bulletPool, worldBounds, null);
         enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
         mainShipTexture = atlas.findRegion("main_ship").getTexture();
-        mainShip = new MainShip(atlas, "main_ship");
-
+        mainShip = new MainShip(atlas, "main_ship", bulletPool, null);
     }
 
     @Override
@@ -63,6 +62,8 @@ public class GameScreen extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        deleteAllDestroyed();
+
         draw();
     }
 
@@ -82,6 +83,11 @@ public class GameScreen extends Base2DScreen {
         bulletPool.drawAllActive(batch);
         enemyPool.drawAllActive(batch);
         batch.end();
+    }
+
+    private void deleteAllDestroyed() {
+        bulletPool.freeAllDestroyedActiveSprites();
+        enemyPool.freeAllDestroyedActiveSprites();
     }
 
     @Override

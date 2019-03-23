@@ -9,19 +9,18 @@ import s.yarlykov.pool.BulletPool;
 import s.yarlykov.sprite.Bullet;
 
 public abstract class Ship extends Sprite {
-    protected Vector2 velCurrent = new Vector2();           // Текущая скорость пули
-    protected Vector2 velShip = new Vector2();;             // Скорость корабля
-    protected Vector2 velBullet = new Vector2();;           // Скорость пули
-    protected Vector2 pos0;                                 // Начальная позиция корябля
+    protected Vector2 velCurrent = new Vector2();           // Текущая скорость корабля
+    protected Vector2 velShip = new Vector2();              // Скорость корабля
+    protected Vector2 velBullet = new Vector2();           // Скорость пули
+    protected Rect worldBounds;
 
-    protected TextureRegion[] regionsShip;
     protected TextureRegion regionBullet;
     protected BulletPool bulletPool;
-    protected Rect worldBounds;
     protected Sound shootSound;
 
     protected float reloadInterval;
     protected float reloadTimer;
+
     protected float bulletHeight;
     protected int health;
     protected int armor;
@@ -53,6 +52,7 @@ public abstract class Ship extends Sprite {
         bullet.set(this, regionBullet, pos, velBullet, bulletHeight, worldBounds, damage);
 //        shootSound.play();
     }
+
 
     abstract protected void moveRight();
     abstract protected void moveLeft();
