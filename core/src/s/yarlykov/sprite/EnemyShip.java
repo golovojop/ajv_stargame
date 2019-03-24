@@ -1,5 +1,6 @@
 package s.yarlykov.sprite;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -38,13 +39,16 @@ public class EnemyShip extends Ship {
     private Vector2 velDescent = new Vector2(0, -0.02f);
     private State state;
 
-    public EnemyShip(BulletPool bulletPool, Rect worldBounds) {
+    public EnemyShip(BulletPool bulletPool, Sound shootSound, Sound explosionSound, Rect worldBounds) {
         this.worldBounds = worldBounds;
         this.bulletPool = bulletPool;
+        this.shootSound = shootSound;
+        this.explosionSound = explosionSound;
     }
 
     public void set(TextureRegion[] regions,    //  Картинки корабля
                     float heightProp,           //  Пропорция отрисовки корабля
+                    int frame,
                     TextureRegion regionBullet, //  Картинка пули
                     float bulletHeight,         //  Пропорция отрисовки пули
                     Vector2 velShip,            //  Скорость корабля
@@ -57,6 +61,7 @@ public class EnemyShip extends Ship {
         this.regions = regions;
         this.velShip = velShip;
         this.velCurrent.set(velDescent);
+        this.frame = frame;
         this.regionBullet = regionBullet;
         this.bulletHeight = bulletHeight;
         this.velBullet.set(0, velBullet);
@@ -64,6 +69,7 @@ public class EnemyShip extends Ship {
         this.armor = armor;
         this.damage = damage;
         this.health = health;
+        this.halfHealth = health / 2;
         this.state = State.DESCENT;
         isDestroyed = false;
         setHeightProportion(heightProp);

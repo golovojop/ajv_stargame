@@ -17,12 +17,14 @@ public abstract class Ship extends Sprite {
     protected TextureRegion regionBullet;
     protected BulletPool bulletPool;
     protected Sound shootSound;
+    protected Sound explosionSound;
 
     protected float reloadInterval;
     protected float reloadTimer;
 
     protected float bulletHeight;
     protected int health;
+    protected int halfHealth;
     protected int armor;
     protected int damage;
 
@@ -50,9 +52,34 @@ public abstract class Ship extends Sprite {
     public void shoot() {
         Bullet bullet = bulletPool.obtain();
         bullet.set(this, regionBullet, pos, velBullet, bulletHeight, worldBounds, damage);
-//        shootSound.play();
+        shootSound.play();
     }
 
+
+    public void shoot(Vector2 position) {
+        Bullet bullet = bulletPool.obtain();
+        bullet.set(this, regionBullet, position, velBullet, bulletHeight, worldBounds, damage);
+        shootSound.play();
+    }
+
+    public void hit(int damage) {
+        health -= damage;
+
+        // Сменить цвет, если повреждем
+        if(health < halfHealth) {
+            frame = 1;
+        }
+
+        if(health <= 0) {
+            health = 0;
+            destroy();
+            explosionSound.play();
+        }
+    }
+
+    public int getHealth() {
+        return health;
+    }
 
     abstract protected void moveRight();
     abstract protected void moveLeft();

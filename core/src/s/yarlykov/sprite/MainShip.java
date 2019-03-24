@@ -33,15 +33,22 @@ public class MainShip extends Ship {
         this.bulletPool = bulletPool;
         this.regionBullet = atlas.findRegion("bulletMainShip");
         this.bulletHeight = 0.01f;
-        this.velBullet.set(0, 0.5f);        setHeightProportion(0.15f);
+        this.velBullet.set(0, 0.5f);
+        setHeightProportion(0.15f);
         this.velShip = new Vector2(V_LEN, 0);
         this.reloadInterval = 0.2f;
+        this.shootSound = shootSound;
+
+        this.damage = 15;
+        this.health = 100;
+        this.armor = 100;
+        this.halfHealth = this.health / 2;
     }
 
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
-        // Отрисовать корабль по центру внизу с отступом 0.02f
+        // Отрисовать корабль по центру внизу с отступом 0.03f
         pos.set(worldBounds.pos.x, worldBounds.getBottom() + halfHeight + 0.03f);
     }
 
@@ -70,7 +77,7 @@ public class MainShip extends Ship {
         reloadTimer += delta;
         if (reloadTimer >= reloadInterval) {
             reloadTimer = 0f;
-            shoot();
+            shoot(new Vector2(pos.x, getTop()));
         }
 
         if (getRight() > worldBounds.getRight()) {
@@ -185,8 +192,6 @@ public class MainShip extends Ship {
                 break;
         }
     }
-
-//    public void shoot(){}
 
     protected void moveRight() {
         velCurrent.set(velShip);

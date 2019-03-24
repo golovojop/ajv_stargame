@@ -2,9 +2,13 @@ package s.yarlykov.base;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
+import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import s.yarlykov.math.Rect;
+import s.yarlykov.sprite.Bullet;
 
 /**
  * Пул управляет жизненным циклом объектов:
@@ -16,7 +20,6 @@ import java.util.List;
 
 public abstract class SpritesPool<T extends Sprite> {
     protected final List<T> activeObjects = new ArrayList<T>();
-
     protected final List<T> freeObjects = new ArrayList<T>();
 
     protected abstract T newObject();
@@ -46,8 +49,8 @@ public abstract class SpritesPool<T extends Sprite> {
         Iterator it = activeObjects.iterator();
 
         while (it.hasNext()) {
-            T next = (T)it.next();
-            if(next.equals(object)) {
+            T next = (T) it.next();
+            if (next.equals(object)) {
                 it.remove();
                 freeObjects.add(object);
                 break;
@@ -56,20 +59,20 @@ public abstract class SpritesPool<T extends Sprite> {
         System.out.println(this.getClass().getName() + " active/free: " + activeObjects.size() + "/" + freeObjects.size());
     }
 
-    public void  updateAllActive(float delta) {
-        for(T sprite : activeObjects) {
-            if(!sprite.isDestroyed()) sprite.update(delta);
+    public void updateAllActive(float delta) {
+        for (T sprite : activeObjects) {
+            if (!sprite.isDestroyed()) sprite.update(delta);
         }
 
     }
 
-    public void  drawAllActive(SpriteBatch batch) {
-        for(T sprite : activeObjects) {
+    public void drawAllActive(SpriteBatch batch) {
+        for (T sprite : activeObjects) {
             if (!sprite.isDestroyed()) sprite.draw(batch);
         }
     }
 
-    public void  freeAllDestroyedActiveSprites() {
+    public void freeAllDestroyedActiveSprites() {
         Iterator it = activeObjects.iterator();
 
         while (it.hasNext()) {
@@ -91,5 +94,4 @@ public abstract class SpritesPool<T extends Sprite> {
         activeObjects.clear();
         freeObjects.clear();
     }
-
 }

@@ -2,6 +2,8 @@ package s.yarlykov.screen;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -9,11 +11,17 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
+import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 import s.yarlykov.base.Base2DScreen;
+import s.yarlykov.base.Ship;
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
 import s.yarlykov.pool.EnemyPool;
 import s.yarlykov.sprite.Background;
+import s.yarlykov.sprite.Bullet;
 import s.yarlykov.sprite.EnemyShip;
 import s.yarlykov.sprite.MainShip;
 import s.yarlykov.sprite.Star;
@@ -30,6 +38,12 @@ public class GameScreen extends Base2DScreen {
     private EnemiesEmitter enemiesEmitter;
     private Texture mainShipTexture;
 
+    private Music music;
+    private Sound laserSound;
+    private Sound bulletSound;
+    private Sound explosionSound;
+
+
 
     private Game game;
 
@@ -40,15 +54,22 @@ public class GameScreen extends Base2DScreen {
     @Override
     public void show() {
         super.show();
+        music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
+        music.setLooping(true);
+        music.play();
+        laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
+        bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
+        explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
+
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/mainAtlas.pack");
 
         bulletPool = new BulletPool();
-        enemyPool = new EnemyPool(bulletPool, worldBounds, null);
+        enemyPool = new EnemyPool(bulletPool, worldBounds, bulletSound, explosionSound);
         enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
         mainShipTexture = atlas.findRegion("main_ship").getTexture();
-        mainShip = new MainShip(atlas, "main_ship", bulletPool, null);
+        mainShip = new MainShip(atlas, "main_ship", bulletPool, laserSound);
     }
 
     @Override
@@ -72,6 +93,7 @@ public class GameScreen extends Base2DScreen {
         bulletPool.updateAllActive(delta);
         enemyPool.updateAllActive(delta);
         enemiesEmitter.generate(delta);
+        checkHits(enemyPool.getActiveObjects(), bulletPool.getActiveObjects());
     }
 
     private void draw() {
@@ -92,6 +114,11 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public void dispose() {
+        music.dispose();
+        laserSound.dispose();
+        bulletSound.dispose();
+        explosionSound.dispose();
+        atlas.dispose();
         backgroundTexture.dispose();
         bulletPool.dispose();
         enemyPool.dispose();
@@ -121,5 +148,26 @@ public class GameScreen extends Base2DScreen {
     public boolean keyUp(int keycode) {
         mainShip.keyUp(keycode);
         return false;
+    }
+
+
+    /**
+     * Проверить попадание во вражеский корабль
+     * @param enemyShips
+     * @param bullets
+     */
+    public void checkHits(List<EnemyShip> enemyShips, List<Bullet> bullets){
+        List<Bullet> mainShipBullets = bullets.stream().filter(b -> b.getOwner() == mainShip).collect(Collectors.toList());
+
+        enemyShips.forEach(s -> {
+            mainShipBullets.forEach(b-> {
+                if(s.isMe(b.pos)){
+                    System.out.println("checkHits: enemy health = " + s.getHealth());
+                    s.hit(b.getDamage());
+                    b.destroy();
+                }
+            });
+
+        });
     }
 }
