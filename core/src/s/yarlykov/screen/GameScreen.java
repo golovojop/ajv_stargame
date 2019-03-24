@@ -9,14 +9,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.Array;
 
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import s.yarlykov.base.Base2DScreen;
-import s.yarlykov.base.Ship;
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
 import s.yarlykov.pool.EnemyPool;
@@ -24,7 +21,6 @@ import s.yarlykov.sprite.Background;
 import s.yarlykov.sprite.Bullet;
 import s.yarlykov.sprite.EnemyShip;
 import s.yarlykov.sprite.MainShip;
-import s.yarlykov.sprite.Star;
 import s.yarlykov.utils.EnemiesEmitter;
 
 public class GameScreen extends Base2DScreen {
@@ -42,8 +38,6 @@ public class GameScreen extends Base2DScreen {
     private Sound laserSound;
     private Sound bulletSound;
     private Sound explosionSound;
-
-
 
     private Game game;
 
@@ -149,7 +143,6 @@ public class GameScreen extends Base2DScreen {
         mainShip.keyUp(keycode);
         return false;
     }
-
 
     /**
      * Проверить попадание во вражеский корабль

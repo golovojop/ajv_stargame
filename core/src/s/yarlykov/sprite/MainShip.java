@@ -137,7 +137,6 @@ public class MainShip extends Ship {
         return false;
     }
 
-
     /**
      * Методы для управления клавиатурой
      * public void keyDown(int keycode)
@@ -196,11 +195,9 @@ public class MainShip extends Ship {
     protected void moveRight() {
         velCurrent.set(velShip);
     }
-
     protected void moveLeft() {
         velCurrent.set(velShip).rotate(180);
     }
-
     protected void stop() {
         velCurrent.setZero();
     }

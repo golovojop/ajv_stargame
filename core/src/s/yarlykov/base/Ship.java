@@ -62,6 +62,10 @@ public abstract class Ship extends Sprite {
         shootSound.play();
     }
 
+    /**
+     * Пападание в корабль
+     * @param damage
+     */
     public void hit(int damage) {
         health -= damage;
 
