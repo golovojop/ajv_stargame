@@ -155,9 +155,9 @@ public class GameScreen extends Base2DScreen {
         enemyShips.forEach(s -> {
             mainShipBullets.forEach(b-> {
                 if(s.isMe(b.pos)){
-                    System.out.println("checkHits: enemy health = " + s.getHealth());
                     s.hit(b.getDamage());
                     b.destroy();
+                    System.out.println("checkHits: enemy health = " + s.getHealth());
                 }
             });
 
