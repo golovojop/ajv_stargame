@@ -11,6 +11,7 @@ import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
+import s.yarlykov.pool.ExplosionPool;
 
 import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
@@ -25,12 +26,13 @@ public class MainShip extends Ship {
 
     private TextureAtlas atlas;
 
-    public MainShip(TextureAtlas atlas, String region, BulletPool bulletPool, Sound shootSound) {
+    public MainShip(TextureAtlas atlas, String region, BulletPool bulletPool, ExplosionPool explosionPool, Sound shootSound) {
         // Регион "main_ship" содержит два корабля. Нужно разделить корабли
         // по отдельным регионам
         super(atlas.findRegion(region), 1, 2, 2);
         this.atlas = atlas;
         this.bulletPool = bulletPool;
+        this.explosionPool = explosionPool;
         this.regionBullet = atlas.findRegion("bulletMainShip");
         this.bulletHeight = 0.01f;
         this.velBullet.set(0, 0.5f);

@@ -11,7 +11,9 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
@@ -41,6 +43,8 @@ public class GameScreen extends Base2DScreen {
     private Sound bulletSound;
     private Sound explosionSound;
 
+    private boolean gameOver;
+
     private Game game;
 
     public GameScreen(Game game) {
@@ -67,7 +71,7 @@ public class GameScreen extends Base2DScreen {
 
         enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
         mainShipTexture = atlas.findRegion("main_ship").getTexture();
-        mainShip = new MainShip(atlas, "main_ship", bulletPool, laserSound);
+        mainShip = new MainShip(atlas, "main_ship", bulletPool, explosionPool, laserSound);
     }
 
     @Override
@@ -81,19 +85,20 @@ public class GameScreen extends Base2DScreen {
     public void render(float delta) {
         super.render(delta);
         update(delta);
+        checkCollisions();
         deleteAllDestroyed();
-
         draw();
     }
 
     private void update(float delta) {
         explosionPool.updateAllActive(delta);
 
-        mainShip.update(delta);
-        bulletPool.updateAllActive(delta);
-        enemyPool.updateAllActive(delta);
-        enemiesEmitter.generate(delta);
-        checkHits(enemyPool.getActiveObjects(), bulletPool.getActiveObjects());
+        if(!gameOver) {
+            mainShip.update(delta);
+            bulletPool.updateAllActive(delta);
+            enemyPool.updateAllActive(delta);
+            enemiesEmitter.generate(delta);
+        }
     }
 
     private void draw() {
@@ -101,10 +106,11 @@ public class GameScreen extends Base2DScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
-        mainShip.draw(batch);
-        bulletPool.drawAllActive(batch);
-        enemyPool.drawAllActive(batch);
-
+        if(!gameOver) {
+            mainShip.draw(batch);
+            bulletPool.drawAllActive(batch);
+            enemyPool.drawAllActive(batch);
+        }
         explosionPool.drawAllActive(batch);
         batch.end();
     }
@@ -154,81 +160,91 @@ public class GameScreen extends Base2DScreen {
     }
 
     /**
-     * Проверить попадание во вражеский корабль
-     * @param enemyShips
-     * @param bullets
+     * Проверить попадание в корабли и столкновение кораблей
      */
-    public void checkHits(List<EnemyShip> enemyShips, List<Bullet> bullets){
-        List<Bullet> mainShipBullets = bullets.stream().filter(b -> b.getOwner() == mainShip).collect(Collectors.toList());
-
-        enemyShips.forEach(s -> {
-            mainShipBullets.forEach(b-> {
-                if(s.isMe(b.pos)){
-                    s.hit(b.getDamage());
-                    b.destroy();
-                    System.out.println("checkHits: enemy health = " + s.getHealth());
-                }
-            });
-
-        });
-    }
-
     private void checkCollisions() {
-        if (mainShip.isDestroyed()) {
-            return;
-        }
 
-        /**
-         * Столкновение кораблей.
-         * Наносимый урон - полное уничтожение обоих кораблей
-         */
-        List<EnemyShip> enemyList = enemyPool.getActiveObjects();
-
-        for (EnemyShip enemy : enemyList) {
-            if (enemy.isDestroyed()) {
-                continue;
-            }
+        // Отработать столкновение кораблей
+        enemyPool.getActiveObjects().stream()
+                .filter(s -> !s.isDestroyed())
+                .forEach(enemy -> {
             float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
-
             if (enemy.pos.dst(mainShip.pos) < minDist) {
                 enemy.hit(enemy.getHealth());
                 mainShip.hit(mainShip.getHealth());
-                return;
             }
-        }
+        });
 
-        /**
-         * Попадание во враж корабль пулями основного корабля
-         */
-        List<Bullet> bulletList = bulletPool.getActiveObjects();
+        // Отработать попадание пуль
+        bulletPool.getActiveObjects().stream()
+                .filter(b -> !b.isDestroyed())
+                .forEach(b -> {
 
-        for (EnemyShip enemy : enemyList) {
-            if (enemy.isDestroyed()) {
-                continue;
-            }
-            for (Bullet bullet : bulletList) {
-                if (bullet.getOwner() != mainShip || bullet.isDestroyed()) {
-                    continue;
-                }
-                if (enemy.isBulletCollision(bullet)) {
-                    enemy.hit(bullet.getDamage());
-                    bullet.destroy();
-                }
-            }
-        }
+                    if (b.getOwner().getClass() == MainShip.class) {
+                        enemyPool.getActiveObjects().stream()
+                                .filter(s -> !s.isDestroyed())
+                                .forEach(s -> {
+                                    if (s.isMe(b.pos)) {
+                                        s.hit(b.getDamage());
+                                        b.destroy();
+                                        System.out.println("checkHits: enemyShip health = " + s.getHealth());
+                                    }
+                                });
+                    } else {
+                        if (mainShip.isMe(b.pos)) {
+                            mainShip.hit(b.getDamage());
+                            b.destroy();
+                            System.out.println("checkHits: mainShip health = " + mainShip.getHealth());
+                        }
+                    }
+                });
 
-        /**
-         * Попадание в основной корабль
-         */
-        for (Bullet bullet : bulletList) {
-            if (bullet.getOwner() == mainShip || bullet.isDestroyed()) {
-                continue;
-            }
-            if (mainShip.isBulletCollision(bullet)) {
-                mainShip.hit(bullet.getDamage());
-                bullet.destroy();
-            }
-        }
+        gameOver = mainShip.isDestroyed();
+
     }
+
+//    private void checkCollisions() {
+//        if (mainShip.isDestroyed()) {
+//            return;
+//        }
+//
+//        /**
+//         * Столкновение кораблей.
+//         * Наносимый урон - полное уничтожение обоих кораблей
+//         */
+//        List<EnemyShip> enemyList = enemyPool.getActiveObjects();
+//
+//        for (EnemyShip enemy : enemyList) {
+//            if (enemy.isDestroyed()) {
+//                continue;
+//            }
+//            float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
+//
+//            if (enemy.pos.dst(mainShip.pos) < minDist) {
+//                enemy.hit(enemy.getHealth());
+//                mainShip.hit(mainShip.getHealth());
+//                return;
+//            }
+//        }
+//
+//        /**
+//         * Попадание во враж корабль пулями основного корабля
+//         */
+//        List<Bullet> bulletList = bulletPool.getActiveObjects();
+//
+//        for (EnemyShip enemy : enemyList) {
+//            if (enemy.isDestroyed()) {
+//                continue;
+//            }
+//            for (Bullet bullet : bulletList) {
+//                if (bullet.getOwner() != mainShip || bullet.isDestroyed()) {
+//                    continue;
+//                }
+//                if (enemy.isBulletCollision(bullet)) {
+//                    enemy.hit(bullet.getDamage());
+//                    bullet.destroy();
+//                }
+//            }
+//        }
 
 }
