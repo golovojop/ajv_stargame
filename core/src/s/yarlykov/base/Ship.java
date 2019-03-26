@@ -6,7 +6,9 @@ import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
+import s.yarlykov.pool.ExplosionPool;
 import s.yarlykov.sprite.Bullet;
+import s.yarlykov.sprite.Explosion;
 
 public abstract class Ship extends Sprite {
     protected Vector2 velCurrent = new Vector2();           // Текущая скорость корабля
@@ -17,7 +19,7 @@ public abstract class Ship extends Sprite {
     protected TextureRegion regionBullet;
     protected BulletPool bulletPool;
     protected Sound shootSound;
-    protected Sound explosionSound;
+    protected ExplosionPool explosionPool;
 
     protected float reloadInterval;
     protected float reloadTimer;
@@ -77,8 +79,16 @@ public abstract class Ship extends Sprite {
         if(health <= 0) {
             health = 0;
             destroy();
-            explosionSound.play();
+            boom();
         }
+    }
+
+    /**
+     * Размер взрыва равн размеру корабля
+     */
+    public void boom(){
+        Explosion explosion = explosionPool.obtain();
+        explosion.set(this.getHeight(), this.pos);
     }
 
     public int getHealth() {

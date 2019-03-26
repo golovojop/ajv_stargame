@@ -63,7 +63,6 @@ public abstract class SpritesPool<T extends Sprite> {
         for (T sprite : activeObjects) {
             if (!sprite.isDestroyed()) sprite.update(delta);
         }
-
     }
 
     public void drawAllActive(SpriteBatch batch) {

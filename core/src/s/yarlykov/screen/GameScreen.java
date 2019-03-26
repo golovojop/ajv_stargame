@@ -17,6 +17,7 @@ import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
 import s.yarlykov.pool.EnemyPool;
+import s.yarlykov.pool.ExplosionPool;
 import s.yarlykov.sprite.Background;
 import s.yarlykov.sprite.Bullet;
 import s.yarlykov.sprite.EnemyShip;
@@ -32,6 +33,7 @@ public class GameScreen extends Base2DScreen {
     private BulletPool bulletPool;
     private EnemyPool enemyPool;
     private EnemiesEmitter enemiesEmitter;
+    private ExplosionPool explosionPool;
     private Texture mainShipTexture;
 
     private Music music;
@@ -60,7 +62,9 @@ public class GameScreen extends Base2DScreen {
         atlas = new TextureAtlas("textures/mainAtlas.pack");
 
         bulletPool = new BulletPool();
-        enemyPool = new EnemyPool(bulletPool, worldBounds, bulletSound, explosionSound);
+        explosionPool = new ExplosionPool(atlas, explosionSound);
+        enemyPool = new EnemyPool(bulletPool, worldBounds, bulletSound, explosionPool);
+
         enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
         mainShipTexture = atlas.findRegion("main_ship").getTexture();
         mainShip = new MainShip(atlas, "main_ship", bulletPool, laserSound);
@@ -83,6 +87,8 @@ public class GameScreen extends Base2DScreen {
     }
 
     private void update(float delta) {
+        explosionPool.updateAllActive(delta);
+
         mainShip.update(delta);
         bulletPool.updateAllActive(delta);
         enemyPool.updateAllActive(delta);
@@ -98,12 +104,15 @@ public class GameScreen extends Base2DScreen {
         mainShip.draw(batch);
         bulletPool.drawAllActive(batch);
         enemyPool.drawAllActive(batch);
+
+        explosionPool.drawAllActive(batch);
         batch.end();
     }
 
     private void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveSprites();
         enemyPool.freeAllDestroyedActiveSprites();
+        explosionPool.freeAllDestroyedActiveSprites();
     }
 
     @Override
@@ -116,6 +125,7 @@ public class GameScreen extends Base2DScreen {
         backgroundTexture.dispose();
         bulletPool.dispose();
         enemyPool.dispose();
+        explosionPool.dispose();
         super.dispose();
     }
 

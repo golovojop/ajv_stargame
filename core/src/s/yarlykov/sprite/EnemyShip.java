@@ -10,6 +10,7 @@ import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
+import s.yarlykov.pool.ExplosionPool;
 import s.yarlykov.utils.Regions;
 
 public class EnemyShip extends Ship {
@@ -39,11 +40,11 @@ public class EnemyShip extends Ship {
     private Vector2 velDescent = new Vector2(0, -0.02f);
     private State state;
 
-    public EnemyShip(BulletPool bulletPool, Sound shootSound, Sound explosionSound, Rect worldBounds) {
+    public EnemyShip(BulletPool bulletPool, Sound shootSound, ExplosionPool explosionPool, Rect worldBounds) {
         this.worldBounds = worldBounds;
         this.bulletPool = bulletPool;
         this.shootSound = shootSound;
-        this.explosionSound = explosionSound;
+        this.explosionPool = explosionPool;
     }
 
     public void set(TextureRegion[] regions,    //  Картинки корабля
