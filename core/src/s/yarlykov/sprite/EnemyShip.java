@@ -99,6 +99,16 @@ public class EnemyShip extends Ship {
         }
     }
 
+    public boolean isBulletCollision(Rect bullet) {
+        return !(
+                bullet.getRight() < getLeft()
+                        || bullet.getLeft() > getRight()
+                        || bullet.getBottom() > getTop()
+                        || bullet.getTop() <  pos.y
+        );
+    }
+
+
     protected void moveRight() {
         velCurrent.set(velShip);
     }

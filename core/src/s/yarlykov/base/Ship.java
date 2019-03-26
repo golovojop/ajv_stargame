@@ -24,6 +24,9 @@ public abstract class Ship extends Sprite {
     protected float reloadInterval;
     protected float reloadTimer;
 
+    private float damageAnimateInterval = 0.1f;
+    private float damageAnimateTimer;
+
     protected float bulletHeight;
     protected int health;
     protected int halfHealth;
@@ -49,6 +52,11 @@ public abstract class Ship extends Sprite {
     @Override
     public void update(float delta) {
         pos.mulAdd(velCurrent, delta);
+
+        damageAnimateTimer += delta;
+        if (damageAnimateTimer >= damageAnimateInterval) {
+            frame = 0;
+        }
     }
 
     public void shoot() {
@@ -71,20 +79,23 @@ public abstract class Ship extends Sprite {
     public void hit(int damage) {
         health -= damage;
 
-        // Сменить цвет, если повреждем
-        if(health < halfHealth) {
-            frame = 1;
-        }
+        frame = 1;
+        damageAnimateTimer = 0f;
 
         if(health <= 0) {
             health = 0;
             destroy();
-            boom();
         }
     }
 
+    @Override
+    public void destroy() {
+        super.destroy();
+        boom();
+    }
+
     /**
-     * Размер взрыва равн размеру корабля
+     * Размер взрыва равен размеру корабля
      */
     public void boom(){
         Explosion explosion = explosionPool.obtain();

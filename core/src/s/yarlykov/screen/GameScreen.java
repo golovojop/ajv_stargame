@@ -141,7 +141,6 @@ public class GameScreen extends Base2DScreen {
         return false;
     }
 
-
     @Override
     public boolean keyDown(int keycode) {
         mainShip.keyDown(keycode);
@@ -173,4 +172,63 @@ public class GameScreen extends Base2DScreen {
 
         });
     }
+
+    private void checkCollisions() {
+        if (mainShip.isDestroyed()) {
+            return;
+        }
+
+        /**
+         * Столкновение кораблей.
+         * Наносимый урон - полное уничтожение обоих кораблей
+         */
+        List<EnemyShip> enemyList = enemyPool.getActiveObjects();
+
+        for (EnemyShip enemy : enemyList) {
+            if (enemy.isDestroyed()) {
+                continue;
+            }
+            float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
+
+            if (enemy.pos.dst(mainShip.pos) < minDist) {
+                enemy.hit(enemy.getHealth());
+                mainShip.hit(mainShip.getHealth());
+                return;
+            }
+        }
+
+        /**
+         * Попадание во враж корабль пулями основного корабля
+         */
+        List<Bullet> bulletList = bulletPool.getActiveObjects();
+
+        for (EnemyShip enemy : enemyList) {
+            if (enemy.isDestroyed()) {
+                continue;
+            }
+            for (Bullet bullet : bulletList) {
+                if (bullet.getOwner() != mainShip || bullet.isDestroyed()) {
+                    continue;
+                }
+                if (enemy.isBulletCollision(bullet)) {
+                    enemy.hit(bullet.getDamage());
+                    bullet.destroy();
+                }
+            }
+        }
+
+        /**
+         * Попадание в основной корабль
+         */
+        for (Bullet bullet : bulletList) {
+            if (bullet.getOwner() == mainShip || bullet.isDestroyed()) {
+                continue;
+            }
+            if (mainShip.isBulletCollision(bullet)) {
+                mainShip.hit(bullet.getDamage());
+                bullet.destroy();
+            }
+        }
+    }
+
 }
