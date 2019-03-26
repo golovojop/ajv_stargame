@@ -1,93 +1,204 @@
 package s.yarlykov.sprite;
 
+import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
+import s.yarlykov.pool.BulletPool;
 
 import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
-public class MainShip extends Sprite {
+public class MainShip extends Ship {
+    private static float V_LEN = 0.6f;
+    private static final int NOT_TOUCHED = -100;
+    private boolean isPressedRight;
+    private boolean isPressedLeft;
 
-    private static float V_LEN = 0.004f;
-    private TextureRegion[] regions;
-    private Vector2 touchTarget;
-    private Vector2 buf;
-    private Vector2 v;
+    private int leftPointer = NOT_TOUCHED;
+    private int rightPointer = NOT_TOUCHED;
 
-    public MainShip(TextureRegion[] region) {
-        super(region[1]);
+    private TextureAtlas atlas;
 
-        this.touchTarget = new Vector2();
-        this.buf = new Vector2();
-        this.v = new Vector2();
-        this.regions = regions;
-    }
+    public MainShip(TextureAtlas atlas, String region, BulletPool bulletPool, Sound shootSound) {
+        // Регион "main_ship" содержит два корабля. Нужно разделить корабли
+        // по отдельным регионам
+        super(atlas.findRegion(region), 1, 2, 2);
+        this.atlas = atlas;
+        this.bulletPool = bulletPool;
+        this.regionBullet = atlas.findRegion("bulletMainShip");
+        this.bulletHeight = 0.01f;
+        this.velBullet.set(0, 0.5f);
+        setHeightProportion(0.15f);
+        this.velShip = new Vector2(V_LEN, 0);
+        this.reloadInterval = 0.2f;
+        this.shootSound = shootSound;
 
-    public void update() {
-        buf.set(touchTarget);
-        if (buf.sub(pos).len() <= V_LEN) {
-            pos.set(touchTarget);
-        } else {
-            pos.add(v);
-        }
-    }
-
-    public void draw(SpriteBatch batch) {
-        super.draw(batch);
-        update();
+        this.damage = 15;
+        this.health = 100;
+        this.armor = 100;
+        this.halfHealth = this.health / 2;
     }
 
     @Override
     public void resize(Rect worldBounds) {
-        setHeightProportion(worldBounds.getHeight());
-        // Отрисовать корабль в центре окна
-        pos.set(worldBounds.pos);
-        // Установить размер корабля 1/10 экрана world
-        setSize(worldBounds.getWidth()/10, worldBounds.getHeight()/10);
+        super.resize(worldBounds);
+        // Отрисовать корабль по центру внизу с отступом 0.03f
+        pos.set(worldBounds.pos.x, worldBounds.getBottom() + halfHeight + 0.03f);
     }
 
+    @Override
+    public void draw(SpriteBatch batch) {
+        super.draw(batch);
+    }
+
+    /**
+     * mulAdd(Vector2 v, float delta)
+     *
+     * From
+     * https://github.com/libgdx/libgdx/blob/master/gdx/src/com/badlogic/gdx/math/Vector2.java
+     *
+     * @Override
+     * 	public Vector2 mulAdd (Vector2 vec, float scalar) {
+     * 		this.x += vec.x * scalar;
+     * 		this.y += vec.y * scalar;
+     * 		return this;
+     * 	}
+     */
+
+    @Override
+    public void update(float delta) {
+        super.update(delta);
+        reloadTimer += delta;
+        if (reloadTimer >= reloadInterval) {
+            reloadTimer = 0f;
+            shoot(new Vector2(pos.x, getTop()));
+        }
+
+        if (getRight() > worldBounds.getRight()) {
+            setRight(worldBounds.getRight());
+            stop();
+        }
+        if (getLeft() < worldBounds.getLeft()) {
+            setLeft(worldBounds.getLeft());
+            stop();
+        }
+    }
+
+    /**
+     * Методы для работы с тачпадом. Тачпад визуально делится вертикально
+     * пополам. Далее делается проверка в какой половине произошел тач.
+     * На соновании этого выбирвается направление движения. Учитывается
+     * возможность мультитача.
+     *
+     * public boolean touchDown(Vector2 touch, int pointer)
+     * public boolean touchUp(Vector2 touch, int pointer)
+     */
+    @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        this.touchTarget = touch;
-        v.set(touchTarget.cpy().sub(pos)).setLength(V_LEN);
+        if (touch.x < worldBounds.pos.x) {
+            if (leftPointer != NOT_TOUCHED) {
+                return false;
+            }
+            leftPointer = pointer;
+            moveLeft();
+        } else {
+            if (rightPointer != NOT_TOUCHED) {
+                return false;
+            }
+            rightPointer = pointer;
+            moveRight();
+        }
+        return false;
+    }
+
+    @Override
+    public boolean touchUp(Vector2 touch, int pointer) {
+        if (pointer == leftPointer) {
+            leftPointer = NOT_TOUCHED;
+            if (rightPointer != NOT_TOUCHED) {
+                moveRight();
+            } else {
+                stop();
+            }
+        } else if (pointer == rightPointer) {
+            rightPointer = NOT_TOUCHED;
+            if (leftPointer != NOT_TOUCHED) {
+                moveLeft();
+            } else {
+                stop();
+            }
+        }
         return false;
     }
 
     /**
-     * Управляем клавишами
-     * @param keycode
-     * @return
+     * Методы для управления клавиатурой
+     * public void keyDown(int keycode)
+     * public void keyUp(int keycode)
+     *
+     *
+     * Если при удержании клавиши нажимается противоположная,
+     * то направление движения меняется
      */
-    public boolean keyDown(int keycode) {
-
-        Vector2 direct = new Vector2();
-
-        switch (keycode){
-            case ARROW_UP:
-                direct.set(0, 1);
+    public void keyDown(int keycode) {
+        switch (keycode) {
+            case Input.Keys.LEFT:
+            case Input.Keys.A:
+                isPressedLeft = true;
+                moveLeft();
                 break;
-            case ARROW_DOWN:
-                direct.set(0, -1);
+            case Input.Keys.RIGHT:
+            case Input.Keys.D:
+                isPressedRight = true;
+                moveRight();
                 break;
-            case ARROW_LEFT:
-                direct.set(-1, 0);
-                break;
-            case ARROW_RIGHT:
-                direct.set(1, 0);
-                break;
-            default:
+            case Input.Keys.UP:
+                shoot();
                 break;
         }
-
-        // Фиктивная целевая точка, чтобы сдвинуть фигурку, если она неподвижна
-        touchTarget.set(WORLD_SCALE, WORLD_SCALE);
-        v.set(direct).setLength(V_LEN);
-        update();
-        return true;
     }
 
+    /**
+     * Если при отпускании клавиши противоположная удерживается,
+     * нажатой, то направление меняется. Если противиположная
+     * клавиша не удерживается, то останов.
+     */
+    public void keyUp(int keycode) {
+        switch (keycode) {
+            case Input.Keys.LEFT:
+            case Input.Keys.A:
+                isPressedLeft = false;
+                if (isPressedRight) {
+                    moveRight();
+                } else {
+                    stop();
+                }
+                break;
+            case Input.Keys.RIGHT:
+            case Input.Keys.D:
+                isPressedRight = false;
+                if (isPressedLeft) {
+                    moveLeft();
+                } else {
+                    stop();
+                }
+                break;
+        }
+    }
 
-
+    protected void moveRight() {
+        velCurrent.set(velShip);
+    }
+    protected void moveLeft() {
+        velCurrent.set(velShip).rotate(180);
+    }
+    protected void stop() {
+        velCurrent.setZero();
+    }
 }

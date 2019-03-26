@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.Matrix3;
 import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.math.Rect;
+import s.yarlykov.utils.Regions;
 
 public class Sprite extends Rect {
 
@@ -17,11 +18,19 @@ public class Sprite extends Rect {
     protected TextureRegion[] regions;
     private float angle = 0f;
     private float scale = 1f;
-    private int frame = 0;
+    protected int frame = 0;
+    protected boolean isDestroyed;
+
+    public Sprite() {
+    }
 
     public Sprite(TextureRegion region) {
         this.regions = new TextureRegion[1];
         this.regions[0] = region;
+    }
+
+    public Sprite(TextureRegion region, int rows, int cols, int frames) {
+        this.regions = Regions.split(region, rows, cols, frames);
     }
 
     /**
@@ -75,6 +84,18 @@ public class Sprite extends Rect {
 
     public void setScale(float scale) {
         this.scale = scale;
+    }
+
+    public void destroy() {
+        isDestroyed = true;
+    }
+
+    public void flushDestroy() {
+        isDestroyed = false;
+    }
+
+    public boolean isDestroyed() {
+        return isDestroyed;
     }
 
 }
