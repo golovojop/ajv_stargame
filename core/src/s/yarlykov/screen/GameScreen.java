@@ -22,8 +22,11 @@ import s.yarlykov.pool.EnemyPool;
 import s.yarlykov.pool.ExplosionPool;
 import s.yarlykov.sprite.Background;
 import s.yarlykov.sprite.Bullet;
+import s.yarlykov.sprite.ButtonNewGame;
 import s.yarlykov.sprite.EnemyShip;
+import s.yarlykov.sprite.LogoGameOver;
 import s.yarlykov.sprite.MainShip;
+import s.yarlykov.sprite.StarBlink;
 import s.yarlykov.utils.EnemiesEmitter;
 
 public class GameScreen extends Base2DScreen {
@@ -37,6 +40,11 @@ public class GameScreen extends Base2DScreen {
     private EnemiesEmitter enemiesEmitter;
     private ExplosionPool explosionPool;
     private Texture mainShipTexture;
+
+    private LogoGameOver logoGameOver;
+    private ButtonNewGame buttonNewGame;
+
+    private StarBlink starList[];
 
     private Music music;
     private Sound laserSound;
@@ -72,6 +80,14 @@ public class GameScreen extends Base2DScreen {
         enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
         mainShipTexture = atlas.findRegion("main_ship").getTexture();
         mainShip = new MainShip(atlas, "main_ship", bulletPool, explosionPool, laserSound);
+
+        logoGameOver = new LogoGameOver(atlas);
+        buttonNewGame = new ButtonNewGame(atlas, game);
+
+        starList = new StarBlink[32];
+        for (int i = 0; i < starList.length; i++) {
+            starList[i] = new StarBlink(atlas);
+        }
     }
 
     @Override
@@ -79,6 +95,12 @@ public class GameScreen extends Base2DScreen {
         super.resize(worldBounds);
         background.resize(worldBounds);
         mainShip.resize(worldBounds);
+        logoGameOver.resize(worldBounds);
+        buttonNewGame.resize(worldBounds);
+
+        for (StarBlink star : starList) {
+            star.resize(worldBounds);
+        }
     }
 
     @Override
@@ -92,12 +114,18 @@ public class GameScreen extends Base2DScreen {
 
     private void update(float delta) {
         explosionPool.updateAllActive(delta);
+        for (StarBlink star : starList) {
+            star.update(delta);
+        }
 
         if(!gameOver) {
             mainShip.update(delta);
             bulletPool.updateAllActive(delta);
             enemyPool.updateAllActive(delta);
             enemiesEmitter.generate(delta);
+        } else {
+            logoGameOver.update(delta);
+            buttonNewGame.update(delta);
         }
     }
 
@@ -106,10 +134,18 @@ public class GameScreen extends Base2DScreen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         batch.begin();
         background.draw(batch);
+
+        for (StarBlink star : starList) {
+            star.draw(batch);
+        }
+
         if(!gameOver) {
             mainShip.draw(batch);
             bulletPool.drawAllActive(batch);
             enemyPool.drawAllActive(batch);
+        } else {
+            logoGameOver.draw(batch);
+            buttonNewGame.draw(batch);
         }
         explosionPool.drawAllActive(batch);
         batch.end();
@@ -138,12 +174,14 @@ public class GameScreen extends Base2DScreen {
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
         mainShip.touchDown(touch, pointer);
+        buttonNewGame.touchDown(touch, pointer);
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
         mainShip.touchUp(touch, pointer);
+        buttonNewGame.touchUp(touch, pointer);
         return false;
     }
 

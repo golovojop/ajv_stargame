@@ -51,7 +51,7 @@ public abstract class ScaledButton extends Sprite {
         // прямоугольник. Координаты центра тоже меняются.
         Rect scaled = getScaled(NORMAL_SCALE);
 
-        float spot = 0.1f;
+        float spot = 0.09f;
 
 //        System.out.println(String.format("%f, %f, %f, %f",
 //                scaled.pos.x - spot,
