@@ -10,20 +10,13 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.List;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
 import s.yarlykov.pool.EnemyPool;
 import s.yarlykov.pool.ExplosionPool;
 import s.yarlykov.sprite.Background;
-import s.yarlykov.sprite.Bullet;
 import s.yarlykov.sprite.ButtonNewGame;
-import s.yarlykov.sprite.EnemyShip;
 import s.yarlykov.sprite.LogoGameOver;
 import s.yarlykov.sprite.MainShip;
 import s.yarlykov.sprite.StarBlink;
@@ -39,7 +32,6 @@ public class GameScreen extends Base2DScreen {
     private EnemyPool enemyPool;
     private EnemiesEmitter enemiesEmitter;
     private ExplosionPool explosionPool;
-    private Texture mainShipTexture;
 
     private LogoGameOver logoGameOver;
     private ButtonNewGame buttonNewGame;
@@ -78,7 +70,6 @@ public class GameScreen extends Base2DScreen {
         enemyPool = new EnemyPool(bulletPool, worldBounds, bulletSound, explosionPool);
 
         enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
-        mainShipTexture = atlas.findRegion("main_ship").getTexture();
         mainShip = new MainShip(atlas, "main_ship", bulletPool, explosionPool, laserSound);
 
         logoGameOver = new LogoGameOver(atlas);
@@ -118,14 +109,14 @@ public class GameScreen extends Base2DScreen {
             star.update(delta);
         }
 
-        if(!gameOver) {
+        if(gameOver) {
+            logoGameOver.update(delta);
+            buttonNewGame.update(delta);
+        } else {
             mainShip.update(delta);
             bulletPool.updateAllActive(delta);
             enemyPool.updateAllActive(delta);
             enemiesEmitter.generate(delta);
-        } else {
-            logoGameOver.update(delta);
-            buttonNewGame.update(delta);
         }
     }
 
@@ -139,13 +130,13 @@ public class GameScreen extends Base2DScreen {
             star.draw(batch);
         }
 
-        if(!gameOver) {
+        if(gameOver) {
+            logoGameOver.draw(batch);
+            buttonNewGame.draw(batch);
+        } else {
             mainShip.draw(batch);
             bulletPool.drawAllActive(batch);
             enemyPool.drawAllActive(batch);
-        } else {
-            logoGameOver.draw(batch);
-            buttonNewGame.draw(batch);
         }
         explosionPool.drawAllActive(batch);
         batch.end();
@@ -225,20 +216,19 @@ public class GameScreen extends Base2DScreen {
                                     if (s.isMe(b.pos)) {
                                         s.hit(b.getDamage());
                                         b.destroy();
-                                        System.out.println("checkHits: enemyShip health = " + s.getHealth());
+//                                        System.out.println("checkCollisions: enemyShip health = " + s.getHealth());
                                     }
                                 });
                     } else {
                         if (mainShip.isMe(b.pos)) {
                             mainShip.hit(b.getDamage());
                             b.destroy();
-                            System.out.println("checkHits: mainShip health = " + mainShip.getHealth());
+//                            System.out.println("checkCollisions: mainShip health = " + mainShip.getHealth());
                         }
                     }
                 });
 
         gameOver = mainShip.isDestroyed();
-
     }
 
 //    private void checkCollisions() {

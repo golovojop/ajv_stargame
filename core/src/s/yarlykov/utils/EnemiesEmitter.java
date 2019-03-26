@@ -59,10 +59,10 @@ public class EnemiesEmitter {
             int next = generateNum();
 
             enemy.set(enemyRegions[next],
-                    ENEMY_SHIP_HEIGHT,
+                    ENEMY_SHIP_HEIGHT + (next * 0.03f),
                     FRAME,
                     bulletRegion,
-                    ENEMY_BULLET_HEIGHT,
+                    ENEMY_BULLET_HEIGHT + (next * 0.02f),
                     ENEMY_SHIP_VY,
                     ENEMY_BULLET_VY,
                     ENEMY_SHIP_SHOOT_INTERVAL,
@@ -88,4 +88,3 @@ public class EnemiesEmitter {
         return i;
     }
 }
-
