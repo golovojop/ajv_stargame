@@ -213,14 +213,14 @@ public class GameScreen extends Base2DScreen {
                         enemyPool.getActiveObjects().stream()
                                 .filter(s -> !s.isDestroyed())
                                 .forEach(s -> {
-                                    if (s.isMe(b.pos)) {
+                                    if (s.isBulletCollision(b)) {
                                         s.hit(b.getDamage());
                                         b.destroy();
 //                                        System.out.println("checkCollisions: enemyShip health = " + s.getHealth());
                                     }
                                 });
                     } else {
-                        if (mainShip.isMe(b.pos)) {
+                        if (mainShip.isBulletCollision(b)) {
                             mainShip.hit(b.getDamage());
                             b.destroy();
 //                            System.out.println("checkCollisions: mainShip health = " + mainShip.getHealth());
