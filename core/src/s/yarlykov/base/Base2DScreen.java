@@ -16,7 +16,7 @@ public abstract class Base2DScreen implements Screen, InputProcessor {
 
     protected SpriteBatch batch;
 
-    private Matrix4 worldToGl;
+    protected Matrix4 worldToGl;
     private Matrix3 screenToWorld;
 
     private Rect screenBounds; // границы области рисования в пикселях

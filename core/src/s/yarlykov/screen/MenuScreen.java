@@ -10,9 +10,12 @@ package s.yarlykov.screen;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.base.Base2DScreen;
@@ -27,6 +30,7 @@ import s.yarlykov.sprite.Star;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class MenuScreen extends Base2DScreen {
 
@@ -53,9 +57,22 @@ public class MenuScreen extends Base2DScreen {
         this.game = game;
     }
 
+
+
+
     @Override
     public void show() {
         super.show();
+
+
+        /**
+         * DEBUG !!!
+         */
+//        shapeRenderer = new ShapeRenderer();
+//        shapeRenderer.setProjectionMatrix(worldToGl);
+//        shapeRenderer.setAutoShapeType(true);
+
+
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/menuAtlas.tpack");
@@ -117,6 +134,20 @@ public class MenuScreen extends Base2DScreen {
         logo.draw(batch);
         flyingShip.draw(batch);
         batch.end();
+
+//        shape.begin();
+//        shape.begin(ShapeRenderer.ShapeType.Filled);
+//        shape.setColor(Color.CYAN);
+//        shape.rect(0.1f, 0.1f, 0.1f, 0.1f);
+
+
+//        shapeRenderer.begin(ShapeRenderer.ShapeType.Line);
+//        shapeRenderer.setAutoShapeType(true);
+//        shapeRenderer.setColor(Color.CYAN);
+//        shapeRenderer.rect(0.1f, 0.1f, 0.2f, 0.2f);
+////        shapeRenderer.circle(0.1f, 0.1f, 0.2f);
+//        shapeRenderer.end();
+
     }
 
     @Override

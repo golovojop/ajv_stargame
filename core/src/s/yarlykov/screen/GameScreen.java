@@ -10,8 +10,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
+import com.badlogic.gdx.utils.Scaling;
 
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.base.Font;
@@ -58,11 +61,19 @@ public class GameScreen extends Base2DScreen {
 
     private static final int STAR_COUNT = 32;
     private static final float FONT_SIZE = 0.015f;
-    private static final float FONT_PADDING = 0.005f;
+    private static final float PADDING = 0.01f;
     private static final String FRAGS = "Frags: ";
     private static final String LEVEL = "Level: ";
+
+    private static float HP_BORDER_WIDTH = 0.4f;
+    private static float HP_BORDER_HEIGHT = 0.032f;
+    private static float HP_PADDING = 0.002f;
+
+
     private int frags;
 
+    private ShapeRenderer srBorder;
+    private ShapeRenderer srHealth;
 
     public GameScreen(Game game) {
         this.game = game;
@@ -74,7 +85,8 @@ public class GameScreen extends Base2DScreen {
 
         font = new Font("font/gb.fnt", "font/gb.png");
         font.setSize(FONT_SIZE);
-        font.setColor(46 / 255f, 226 / 255f, 215 / 255f, 1f);
+//        font.setColor(46 / 255f, 226 / 255f, 215 / 255f, 1f);
+        font.setColor(Color.CYAN);
         sbFrags = new StringBuilder();
         sbHealth = new StringBuilder();
         sbLevel = new StringBuilder();
@@ -110,6 +122,15 @@ public class GameScreen extends Base2DScreen {
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
+
+        srBorder = new ShapeRenderer();
+        srBorder.setProjectionMatrix(worldToGl);
+        srBorder.setAutoShapeType(true);
+
+        srHealth = new ShapeRenderer();
+        srHealth.setProjectionMatrix(worldToGl);
+        srHealth.setAutoShapeType(true);
+
         background.resize(worldBounds);
         mainShip.resize(worldBounds);
         logoGameOver.resize(worldBounds);
@@ -168,7 +189,39 @@ public class GameScreen extends Base2DScreen {
         explosionPool.drawAllActive(batch);
         printInfo();
         batch.end();
+
+        // Отрисовка ползунка здоровья
+        drawBorder(batch);
+        drawHealth(batch);
     }
+
+    private void drawBorder(SpriteBatch batch) {
+
+        srBorder.begin(ShapeRenderer.ShapeType.Line);
+        srBorder.setAutoShapeType(true);
+        srBorder.setColor(Color.CYAN);
+
+        srBorder.rect(-HP_BORDER_WIDTH/2, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), HP_BORDER_WIDTH, HP_BORDER_HEIGHT);
+        srBorder.end();
+    }
+
+    private void drawHealth(SpriteBatch batch) {
+
+        srHealth.begin(ShapeRenderer.ShapeType.Filled);
+        srHealth.setAutoShapeType(true);
+        srHealth.setColor(Color.PURPLE);
+
+        // HP_BORDER_WIDTH = 0.4f
+        // HP_BORDER_HEIGHT = 0.03f
+
+        float HP_WIDTH = 0.38f;
+        float HP_HEIGHT = HP_BORDER_HEIGHT - HP_PADDING * 4;
+
+        srHealth.rect(-HP_WIDTH/2, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING) + (HP_BORDER_HEIGHT - HP_HEIGHT)/2, HP_WIDTH, HP_HEIGHT);
+        srHealth.end();
+    }
+
+
 
     private void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveSprites();
@@ -311,8 +364,8 @@ public class GameScreen extends Base2DScreen {
     public void printInfo() {
         sbFrags.setLength(0);
         sbLevel.setLength(0);
-        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + FONT_PADDING, worldBounds.getTop() - FONT_PADDING);
-        font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmitter.getLevel()), worldBounds.getRight() - FONT_PADDING, worldBounds.getTop() - FONT_PADDING, Align.right);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + PADDING, worldBounds.getTop() - PADDING*2);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmitter.getLevel()), worldBounds.getRight() - PADDING, worldBounds.getTop() - PADDING*2, Align.right);
 
 //        sbHp.setLength(0);
 //        font.draw(batch, sbHp.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop(), Align.center);
