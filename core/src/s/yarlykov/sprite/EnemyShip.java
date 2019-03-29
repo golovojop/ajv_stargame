@@ -1,5 +1,6 @@
 package s.yarlykov.sprite;
 
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -8,94 +9,113 @@ import com.badlogic.gdx.math.Vector2;
 import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
+import s.yarlykov.pool.BulletPool;
+import s.yarlykov.pool.ExplosionPool;
 import s.yarlykov.utils.Regions;
 
 public class EnemyShip extends Ship {
 
-    private TextureAtlas atlas;
-    private float heightProp;
-    private Vector2 pos0;
-    private Vector2 v;
-    private Vector2 vS;
-    private Vector2 vB;
-    private Vector2 direction;
-    private int lives;
-    private int bullets;
-    private float damage;
-    private float armor;
-    private float health;
-    private Rect worldBounds;
+    private enum State {DESCENT, FIGHT}
 
-    public EnemyShip(TextureAtlas atlas) {
-        this.atlas = atlas;
+    /**
+     *     protected Vector2 velCurrent;           // Текущая скорость пули
+     *     protected Vector2 velShip;              // Скорость корабля
+     *     protected Vector2 velBullet;            // Скорость пули
+     *     protected Vector2 pos0;                 // Начальная позиция корябля
+     *
+     *     protected TextureRegion[] regionsShip;
+     *     protected TextureRegion regionBullet;
+     *     protected BulletPool bulletPool;
+     *     protected Rect worldBounds;
+     *     protected Sound shootSound;
+     *
+     *     protected float reloadInterval;
+     *     protected float reloadTimer;
+     *     protected float bulletHeight;
+     *     protected float health;
+     *     protected float armor;
+     *     protected int damage;
+     */
+
+    private Vector2 velDescent = new Vector2(0, -0.02f);
+    private State state;
+
+    public EnemyShip(BulletPool bulletPool, Sound shootSound, ExplosionPool explosionPool, Rect worldBounds) {
+        this.worldBounds = worldBounds;
+        this.bulletPool = bulletPool;
+        this.shootSound = shootSound;
+        this.explosionPool = explosionPool;
     }
 
-    public void set(String region,      //  Название региона
-                    int rows,           //  Строки
-                    int cols,           //  Столбцы
-                    int frames,         //  Кол-во фреймов
-                    float heightProp,   //  Пропорция отрисовки
-                    Vector2 pos0,       //  Начальная позиция
-                    Vector2 vS,         //  Скорость корабля
-                    Vector2 vB,         //  Скорость пули корабля
-                    int bullets,        //  Количество пуль
-                    int lives,          //  Кол-во жизней
-                    float armor,        //  Защита
-                    float damage,       //  Мощность выстрелов ??
-                    float health) {     //  Текущее здоровье
+    public void set(TextureRegion[] regions,    //  Картинки корабля
+                    float heightProp,           //  Пропорция отрисовки корабля
+                    int frame,
+                    TextureRegion regionBullet, //  Картинка пули
+                    float bulletHeight,         //  Пропорция отрисовки пули
+                    Vector2 velShip,            //  Скорость корабля
+                    float velBullet,            //  Скорость пули
+                    float reloadInterval,
+                    int armor,                  //  Защита
+                    int damage,                 //  Мощность выстрелов
+                    int health) {               //  Текущее здоровье
 
-        this.heightProp = heightProp;
-        this.pos0 = pos0;
-        this.vS = vS;
-        this.vB = vB;
-        this.bullets = bullets;
-        this.lives = lives;
+        this.regions = regions;
+        this.velShip = velShip;
+        this.velCurrent.set(velDescent);
+        this.frame = frame;
+        this.regionBullet = regionBullet;
+        this.bulletHeight = bulletHeight;
+        this.velBullet.set(0, velBullet);
+        this.reloadInterval = reloadInterval;
         this.armor = armor;
         this.damage = damage;
         this.health = health;
-        this.v = vS.cpy();
-
-        regions = Regions.split(atlas.findRegion(region), rows, cols, frames);
-    }
-
-    @Override
-    public void resize(Rect worldBounds) {
+        this.halfHealth = health / 2;
+        this.state = State.DESCENT;
+        isDestroyed = false;
         setHeightProportion(heightProp);
-        this.worldBounds = worldBounds;
-
-        // Отрисовать корабль вверху с отступом 0.03f
-        pos.set(pos0.x, worldBounds.getTop() - halfHeight - 0.03f);
-    }
-
-    public void draw(SpriteBatch batch) {
-        super.draw(batch);
     }
 
     @Override
     public void update(float delta) {
-        pos.mulAdd(v, delta);
-
-        if (getRight() > worldBounds.getRight()) {
-            setRight(worldBounds.getRight());
-            moveLeft();
-        }
-        if (getLeft() < worldBounds.getLeft()) {
-            setLeft(worldBounds.getLeft());
-            moveRight();
+        super.update(delta);
+        switch (state) {
+            case DESCENT:
+                if (getTop() <= worldBounds.getTop()) {
+                    velCurrent.set(velShip);
+                    state = State.FIGHT;
+                }
+                break;
+            case FIGHT:
+                reloadTimer += delta;
+                if (reloadTimer >= reloadInterval) {
+                    reloadTimer = 0f;
+                    shoot();
+                }
+                if (getBottom() <= worldBounds.getBottom()) {
+                    this.destroy();
+                }
+                break;
         }
     }
 
-    protected void shoot(){}
+    public boolean isBulletCollision(Rect bullet) {
+        return !(
+                bullet.getRight() < getLeft()
+                        || bullet.getLeft() > getRight()
+                        || bullet.getBottom() > getTop()
+                        || bullet.getTop() <  pos.y
+        );
+    }
+
 
     protected void moveRight() {
-        v.set(vS);
+        velCurrent.set(velShip);
     }
-
     protected void moveLeft() {
-        v.set(vS).rotate(180);
+        velCurrent.set(velShip).rotate(180);
     }
-
     protected void stop() {
-        v.setZero();
+        velCurrent.setZero();
     }
 }
