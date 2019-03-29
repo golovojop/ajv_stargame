@@ -2,13 +2,9 @@ package s.yarlykov.base;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
-import java.nio.Buffer;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import s.yarlykov.math.Rect;
-import s.yarlykov.sprite.Bullet;
 
 /**
  * Пул управляет жизненным циклом объектов:

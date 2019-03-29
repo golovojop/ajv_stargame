@@ -71,9 +71,18 @@ public class GameScreen extends Base2DScreen {
     @Override
     public void show() {
         super.show();
+
+        font = new Font("font/gb.fnt", "font/gb.png");
+        font.setSize(FONT_SIZE);
+        font.setColor(46 / 255f, 226 / 255f, 215 / 255f, 1f);
+        sbFrags = new StringBuilder();
+        sbHealth = new StringBuilder();
+        sbLevel = new StringBuilder();
+
         music = Gdx.audio.newMusic(Gdx.files.internal("sounds/music.mp3"));
         music.setLooping(true);
         music.play();
+
         laserSound = Gdx.audio.newSound(Gdx.files.internal("sounds/laser.wav"));
         bulletSound = Gdx.audio.newSound(Gdx.files.internal("sounds/bullet.wav"));
         explosionSound = Gdx.audio.newSound(Gdx.files.internal("sounds/explosion.wav"));
@@ -96,13 +105,6 @@ public class GameScreen extends Base2DScreen {
         for (int i = 0; i < starList.length; i++) {
             starList[i] = new StarBlink(atlas);
         }
-
-        font = new Font("font/gb.fnt", "font/gb.png");
-        font.setSize(FONT_SIZE);
-        font.setColor(0.175f, 0.886f, 0.84f, 1f);
-        sbFrags = new StringBuilder();
-        sbHealth = new StringBuilder();
-        sbLevel = new StringBuilder();
     }
 
     @Override
@@ -129,11 +131,12 @@ public class GameScreen extends Base2DScreen {
 
     private void update(float delta) {
         explosionPool.updateAllActive(delta);
+
         for (StarBlink star : starList) {
             star.update(delta);
         }
 
-        if(gameOver) {
+        if (gameOver) {
             logoGameOver.update(delta);
             buttonNewGame.update(delta);
         } else {
@@ -154,7 +157,7 @@ public class GameScreen extends Base2DScreen {
             star.draw(batch);
         }
 
-        if(gameOver) {
+        if (gameOver) {
             logoGameOver.draw(batch);
             buttonNewGame.draw(batch);
         } else {
@@ -184,6 +187,7 @@ public class GameScreen extends Base2DScreen {
         bulletPool.dispose();
         enemyPool.dispose();
         explosionPool.dispose();
+        font.dispose();
         super.dispose();
     }
 
@@ -222,12 +226,12 @@ public class GameScreen extends Base2DScreen {
         enemyPool.getActiveObjects().stream()
                 .filter(s -> !s.isDestroyed())
                 .forEach(enemy -> {
-            float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
-            if (enemy.pos.dst(mainShip.pos) < minDist) {
-                enemy.hit(enemy.getHealth());
-                mainShip.hit(mainShip.getHealth());
-            }
-        });
+                    float minDist = enemy.getHalfWidth() + mainShip.getHalfWidth();
+                    if (enemy.pos.dst(mainShip.pos) < minDist) {
+                        enemy.hit(enemy.getHealth());
+                        mainShip.hit(mainShip.getHealth());
+                    }
+                });
 
         // Отработать попадание пуль
         bulletPool.getActiveObjects().stream()
@@ -304,7 +308,7 @@ public class GameScreen extends Base2DScreen {
 //            }
 //        }
 
-    public void printInfo(){
+    public void printInfo() {
         sbFrags.setLength(0);
         sbLevel.setLength(0);
         font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + FONT_PADDING, worldBounds.getTop() - FONT_PADDING);
@@ -312,9 +316,6 @@ public class GameScreen extends Base2DScreen {
 
 //        sbHp.setLength(0);
 //        font.draw(batch, sbHp.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop(), Align.center);
-
-
-
 
     }
 }
