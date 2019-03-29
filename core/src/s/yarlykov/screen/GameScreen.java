@@ -6,11 +6,13 @@ import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
 import s.yarlykov.base.Base2DScreen;
+import s.yarlykov.base.Font;
 import s.yarlykov.math.Rect;
 import s.yarlykov.pool.BulletPool;
 import s.yarlykov.pool.EnemyPool;
@@ -45,7 +47,19 @@ public class GameScreen extends Base2DScreen {
 
     private boolean gameOver;
 
+    private Font font;
+    private StringBuilder sbFrags;
+    private StringBuilder sbHealth;
+    private StringBuilder sbLevel;
+
     private Game game;
+
+    private static final int STAR_COUNT = 32;
+    private static final float FONT_SIZE = 0.02f;
+    private static final float FONT_PADDING = 0.005f;
+    private static final String FRAGS = "Frags: ";
+    private int frags;
+
 
     public GameScreen(Game game) {
         this.game = game;
@@ -75,10 +89,17 @@ public class GameScreen extends Base2DScreen {
         logoGameOver = new LogoGameOver(atlas);
         buttonNewGame = new ButtonNewGame(atlas, game);
 
-        starList = new StarBlink[32];
+        starList = new StarBlink[STAR_COUNT];
         for (int i = 0; i < starList.length; i++) {
             starList[i] = new StarBlink(atlas);
         }
+
+//        font = new Font("font/font.fnt", "font/font.png");
+        font = new Font("font/gb.fnt", "font/gb.png");
+        font.setSize(FONT_SIZE);
+        sbFrags = new StringBuilder();
+        sbHealth = new StringBuilder();
+        sbLevel = new StringBuilder();
     }
 
     @Override
@@ -139,6 +160,7 @@ public class GameScreen extends Base2DScreen {
             enemyPool.drawAllActive(batch);
         }
         explosionPool.drawAllActive(batch);
+        printInfo();
         batch.end();
     }
 
@@ -275,4 +297,8 @@ public class GameScreen extends Base2DScreen {
 //            }
 //        }
 
+    public void printInfo(){
+        sbFrags.setLength(0);
+        font.draw(batch, sbFrags.append("TEST"), worldBounds.getLeft() + FONT_PADDING, worldBounds.getTop() - FONT_PADDING);
+    }
 }
