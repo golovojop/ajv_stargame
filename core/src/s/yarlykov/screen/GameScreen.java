@@ -4,12 +4,14 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Align;
 
 import s.yarlykov.base.Base2DScreen;
 import s.yarlykov.base.Font;
@@ -55,9 +57,10 @@ public class GameScreen extends Base2DScreen {
     private Game game;
 
     private static final int STAR_COUNT = 32;
-    private static final float FONT_SIZE = 0.02f;
+    private static final float FONT_SIZE = 0.015f;
     private static final float FONT_PADDING = 0.005f;
     private static final String FRAGS = "Frags: ";
+    private static final String LEVEL = "Level: ";
     private int frags;
 
 
@@ -94,9 +97,9 @@ public class GameScreen extends Base2DScreen {
             starList[i] = new StarBlink(atlas);
         }
 
-//        font = new Font("font/font.fnt", "font/font.png");
         font = new Font("font/gb.fnt", "font/gb.png");
         font.setSize(FONT_SIZE);
+        font.setColor(0.175f, 0.886f, 0.84f, 1f);
         sbFrags = new StringBuilder();
         sbHealth = new StringBuilder();
         sbLevel = new StringBuilder();
@@ -137,7 +140,7 @@ public class GameScreen extends Base2DScreen {
             mainShip.update(delta);
             bulletPool.updateAllActive(delta);
             enemyPool.updateAllActive(delta);
-            enemiesEmitter.generate(delta);
+            enemiesEmitter.generate(delta, frags);
         }
     }
 
@@ -238,6 +241,10 @@ public class GameScreen extends Base2DScreen {
                                     if (s.isBulletCollision(b)) {
                                         s.hit(b.getDamage());
                                         b.destroy();
+                                        // Счетчик убитых врагов
+                                        if (s.isDestroyed()) {
+                                            frags++;
+                                        }
 //                                        System.out.println("checkCollisions: enemyShip health = " + s.getHealth());
                                     }
                                 });
@@ -299,6 +306,15 @@ public class GameScreen extends Base2DScreen {
 
     public void printInfo(){
         sbFrags.setLength(0);
-        font.draw(batch, sbFrags.append("TEST"), worldBounds.getLeft() + FONT_PADDING, worldBounds.getTop() - FONT_PADDING);
+        sbLevel.setLength(0);
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + FONT_PADDING, worldBounds.getTop() - FONT_PADDING);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmitter.getLevel()), worldBounds.getRight() - FONT_PADDING, worldBounds.getTop() - FONT_PADDING, Align.right);
+
+//        sbHp.setLength(0);
+//        font.draw(batch, sbHp.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop(), Align.center);
+
+
+
+
     }
 }

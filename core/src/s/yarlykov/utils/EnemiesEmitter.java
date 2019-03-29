@@ -28,6 +28,7 @@ public class EnemiesEmitter {
     private static final float ENEMY_BULLET_HEIGHT = 0.01f;
     private static final float ENEMY_BULLET_VY = -0.3f;
 
+    private int level;
 
     private Rect worldBounds;
 
@@ -50,7 +51,15 @@ public class EnemiesEmitter {
         }
     }
 
-    public void generate(float delta) {
+    /**
+     * TODO: Сгенерить новый вражеский корабль для вывода на экран. Корабль
+     * TODO: берется из пула перед отрисовкой инициализируется.
+     */
+    public void generate(float delta, int frags) {
+
+        // Смена уровня учитывает кол-во сбитых врагов.
+        level = frags / 10 + 1;
+
         generateTimer += delta;
         if (generateTimer >= generateInterval) {
             generateTimer = 0f;
@@ -86,5 +95,9 @@ public class EnemiesEmitter {
         else if(num >= 6) i = (ENEMIES - 2);
 
         return i;
+    }
+
+    public int getLevel() {
+        return level;
     }
 }
