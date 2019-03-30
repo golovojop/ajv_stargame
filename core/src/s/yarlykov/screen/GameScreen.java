@@ -27,6 +27,7 @@ import s.yarlykov.sprite.ButtonNewGame;
 import s.yarlykov.sprite.LogoGameOver;
 import s.yarlykov.sprite.MainShip;
 import s.yarlykov.sprite.StarBlink;
+import s.yarlykov.sprite.Ufo;
 import s.yarlykov.utils.EnemiesEmitter;
 
 public class GameScreen extends Base2DScreen {
@@ -34,6 +35,7 @@ public class GameScreen extends Base2DScreen {
     private Background background;
     private Texture backgroundTexture;
     private TextureAtlas atlas;
+    private TextureAtlas atlasUfo;
     private MainShip mainShip;
     private BulletPool bulletPool;
     private EnemyPool enemyPool;
@@ -72,6 +74,8 @@ public class GameScreen extends Base2DScreen {
     private int frags = 0;
     private ShapeRenderer srHealth;
 
+    private Ufo ufo;
+
     public GameScreen(Game game) {
         this.game = game;
     }
@@ -98,6 +102,7 @@ public class GameScreen extends Base2DScreen {
         backgroundTexture = new Texture("textures/bg.png");
         background = new Background(new TextureRegion(backgroundTexture));
         atlas = new TextureAtlas("textures/mainAtlas.pack");
+        atlasUfo = new TextureAtlas("textures/magic/magic.pack");
 
         bulletPool = new BulletPool();
         explosionPool = new ExplosionPool(atlas, explosionSound);
@@ -105,6 +110,7 @@ public class GameScreen extends Base2DScreen {
 
         enemiesEmitter = new EnemiesEmitter(atlas, worldBounds, enemyPool);
         mainShip = new MainShip(atlas, "main_ship", bulletPool, explosionPool, laserSound);
+        ufo = new Ufo(atlasUfo, mainShip);
 
         logoGameOver = new LogoGameOver(atlas);
         buttonNewGame = new ButtonNewGame(atlas, game);
@@ -127,6 +133,7 @@ public class GameScreen extends Base2DScreen {
         mainShip.resize(worldBounds);
         logoGameOver.resize(worldBounds);
         buttonNewGame.resize(worldBounds);
+        ufo.resize(worldBounds);
 
         for (StarBlink star : starList) {
             star.resize(worldBounds);
@@ -152,11 +159,13 @@ public class GameScreen extends Base2DScreen {
         if (gameOver) {
             logoGameOver.update(delta);
             buttonNewGame.update(delta);
+            ufo.destroy();
         } else {
             mainShip.update(delta);
             bulletPool.updateAllActive(delta);
             enemyPool.updateAllActive(delta);
             enemiesEmitter.generate(delta, frags);
+            ufo.update(delta);
         }
     }
 
@@ -177,6 +186,7 @@ public class GameScreen extends Base2DScreen {
             mainShip.draw(batch);
             bulletPool.drawAllActive(batch);
             enemyPool.drawAllActive(batch);
+            ufo.draw(batch);
         }
         explosionPool.drawAllActive(batch);
         batch.end();
@@ -217,6 +227,7 @@ public class GameScreen extends Base2DScreen {
         bulletSound.dispose();
         explosionSound.dispose();
         atlas.dispose();
+        atlasUfo.dispose();
         backgroundTexture.dispose();
         bulletPool.dispose();
         enemyPool.dispose();
@@ -256,7 +267,6 @@ public class GameScreen extends Base2DScreen {
      * Проверить попадание в корабли и столкновение кораблей
      */
     private void checkCollisions() {
-
         // Отработать столкновение кораблей
         enemyPool.getActiveObjects().stream()
                 .filter(s -> !s.isDestroyed())

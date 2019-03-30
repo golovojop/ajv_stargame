@@ -38,7 +38,9 @@ public class EnemyPool extends SpritesPool<EnemyShip> {
     public void drawAllActive(SpriteBatch batch) {
         super.drawAllActive(batch);
 
-        // Индикатор health
+        // Управление положением индикатора health
+        // В процессе движения корабля вниз индикатор должен
+        // подниматься от носа корабля к хвосту
         for(EnemyShip s : activeObjects) {
             String health = String.valueOf(s.getHealth());
             layout.setText(font, health);
