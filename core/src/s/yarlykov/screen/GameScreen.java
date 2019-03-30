@@ -64,15 +64,12 @@ public class GameScreen extends Base2DScreen {
     private static final float PADDING = 0.01f;
     private static final String FRAGS = "Frags: ";
     private static final String LEVEL = "Level: ";
+    private static final String HEALTH = "HP: ";
 
     private static float HP_BORDER_WIDTH = 0.4f;
     private static float HP_BORDER_HEIGHT = 0.032f;
-    private static float HP_PADDING = 0.002f;
 
-
-    private int frags;
-
-    private ShapeRenderer srBorder;
+    private int frags = 0;
     private ShapeRenderer srHealth;
 
     public GameScreen(Game game) {
@@ -85,7 +82,6 @@ public class GameScreen extends Base2DScreen {
 
         font = new Font("font/gb.fnt", "font/gb.png");
         font.setSize(FONT_SIZE);
-//        font.setColor(46 / 255f, 226 / 255f, 215 / 255f, 1f);
         font.setColor(Color.CYAN);
         sbFrags = new StringBuilder();
         sbHealth = new StringBuilder();
@@ -122,10 +118,6 @@ public class GameScreen extends Base2DScreen {
     @Override
     public void resize(Rect worldBounds) {
         super.resize(worldBounds);
-
-        srBorder = new ShapeRenderer();
-        srBorder.setProjectionMatrix(worldToGl);
-        srBorder.setAutoShapeType(true);
 
         srHealth = new ShapeRenderer();
         srHealth.setProjectionMatrix(worldToGl);
@@ -187,41 +179,30 @@ public class GameScreen extends Base2DScreen {
             enemyPool.drawAllActive(batch);
         }
         explosionPool.drawAllActive(batch);
-        printInfo();
         batch.end();
 
-        // Отрисовка ползунка здоровья
-        drawBorder(batch);
-        drawHealth(batch);
+        healthBar();
+
+        batch.begin();
+        printInfo();
+        batch.end();
     }
 
-    private void drawBorder(SpriteBatch batch) {
-
-        srBorder.begin(ShapeRenderer.ShapeType.Line);
-        srBorder.setAutoShapeType(true);
-        srBorder.setColor(Color.CYAN);
-
-        srBorder.rect(-HP_BORDER_WIDTH/2, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), HP_BORDER_WIDTH, HP_BORDER_HEIGHT);
-        srBorder.end();
-    }
-
-    private void drawHealth(SpriteBatch batch) {
-
+    private void healthBar() {
+        // Сначала рисуем заливку
         srHealth.begin(ShapeRenderer.ShapeType.Filled);
         srHealth.setAutoShapeType(true);
-        srHealth.setColor(Color.PURPLE);
+        srHealth.setColor(mainShip.getHealth() > 50 ? Color.PURPLE : Color.RED);
+        float width = HP_BORDER_WIDTH * ((float)mainShip.getHealth()/(float)MainShip.MS_START_HP);
+        srHealth.rect(HP_BORDER_WIDTH/2 - width, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), width, HP_BORDER_HEIGHT);
+        srHealth.end();
 
-        // HP_BORDER_WIDTH = 0.4f
-        // HP_BORDER_HEIGHT = 0.03f
-
-        float HP_WIDTH = 0.38f;
-        float HP_HEIGHT = HP_BORDER_HEIGHT - HP_PADDING * 4;
-
-        srHealth.rect(-HP_WIDTH/2, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING) + (HP_BORDER_HEIGHT - HP_HEIGHT)/2, HP_WIDTH, HP_HEIGHT);
+        // Затем рисуем рамку вокруг заливки
+        srHealth.begin(ShapeRenderer.ShapeType.Line);
+        srHealth.setColor(Color.CYAN);
+        srHealth.rect(-HP_BORDER_WIDTH/2, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), HP_BORDER_WIDTH, HP_BORDER_HEIGHT);
         srHealth.end();
     }
-
-
 
     private void deleteAllDestroyed() {
         bulletPool.freeAllDestroyedActiveSprites();
@@ -241,6 +222,7 @@ public class GameScreen extends Base2DScreen {
         enemyPool.dispose();
         explosionPool.dispose();
         font.dispose();
+        srHealth.dispose();
         super.dispose();
     }
 
@@ -302,14 +284,12 @@ public class GameScreen extends Base2DScreen {
                                         if (s.isDestroyed()) {
                                             frags++;
                                         }
-//                                        System.out.println("checkCollisions: enemyShip health = " + s.getHealth());
                                     }
                                 });
                     } else {
                         if (mainShip.isBulletCollision(b)) {
                             mainShip.hit(b.getDamage());
                             b.destroy();
-//                            System.out.println("checkCollisions: mainShip health = " + mainShip.getHealth());
                         }
                     }
                 });
@@ -364,11 +344,10 @@ public class GameScreen extends Base2DScreen {
     public void printInfo() {
         sbFrags.setLength(0);
         sbLevel.setLength(0);
-        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + PADDING, worldBounds.getTop() - PADDING*2);
-        font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmitter.getLevel()), worldBounds.getRight() - PADDING, worldBounds.getTop() - PADDING*2, Align.right);
-
-//        sbHp.setLength(0);
-//        font.draw(batch, sbHp.append(HP).append(mainShip.getHp()), worldBounds.pos.x, worldBounds.getTop(), Align.center);
-
+        sbHealth.setLength(0);
+        float yPadding = PADDING*2;
+        font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + PADDING, worldBounds.getTop() - yPadding);
+        font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmitter.getLevel()), worldBounds.getRight() - PADDING, worldBounds.getTop() - yPadding, Align.right);
+        font.draw(batch, sbHealth.append(HEALTH).append(mainShip.getHealth()).append("/" + MainShip.MS_START_HP), worldBounds.pos.x, worldBounds.getTop() - yPadding, Align.center);
     }
 }

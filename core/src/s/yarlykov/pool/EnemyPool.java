@@ -37,12 +37,16 @@ public class EnemyPool extends SpritesPool<EnemyShip> {
     @Override
     public void drawAllActive(SpriteBatch batch) {
         super.drawAllActive(batch);
+
+        // Индикатор health
         for(EnemyShip s : activeObjects) {
             String health = String.valueOf(s.getHealth());
             layout.setText(font, health);
 
+            float remain = Math.abs(s.getBottom() - worldBounds.getBottom());
             float posX = (s.pos.x < 0) ? s.pos.x + s.getHalfWidth() : s.pos.x - s.getHalfWidth() - layout.width;
-            font.draw(batch,health, posX, s.getTop() - layout.height);
+            float posY = s.getBottom() + layout.height + s.getHeight()*(1 - remain);
+            font.draw(batch, health, posX, posY);
         }
     }
 

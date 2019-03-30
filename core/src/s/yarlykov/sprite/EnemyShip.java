@@ -109,7 +109,6 @@ public class EnemyShip extends Ship {
         );
     }
 
-
     protected void moveRight() {
         velCurrent.set(velShip);
     }

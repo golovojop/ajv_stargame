@@ -16,13 +16,13 @@ import s.yarlykov.sprite.EnemyShip;
  */
 public class EnemiesEmitter {
 
-    private static final Vector2 ENEMY_SHIP_VY = new Vector2(0f, -0.1f);
-    private static final float ENEMY_SHIP_SHOOT_INTERVAL = 1f;
+    private static final Vector2 ENEMY_SHIP_VY = new Vector2();
+    private static final float ENEMY_SHIP_SHOOT_INTERVAL = 1.6f;
     private static final float ENEMY_SHIP_HEIGHT = 0.1f;
     private static final int ENEMY_SHIP_DAMAGE = 10;
     private static final int ENEMY_SHIP_HEALTH = 100;
     private static final int ENEMY_SHIP_ARMOR = 50;
-    private static final int ENEMIES = 3;
+    private static final int ENEMY_TYPES = 3;
     private static final int FRAME = 0;
 
     private static final float ENEMY_BULLET_HEIGHT = 0.01f;
@@ -35,7 +35,7 @@ public class EnemiesEmitter {
     private float generateInterval = 3f;
     private float generateTimer = 0f;
 
-    private TextureRegion[][] enemyRegions = new TextureRegion[ENEMIES][];
+    private TextureRegion[][] enemyRegions = new TextureRegion[ENEMY_TYPES][];
 
     private TextureRegion bulletRegion;
     private EnemyPool enemyPool;
@@ -44,9 +44,10 @@ public class EnemiesEmitter {
         this.worldBounds = worldBounds;
         this.enemyPool = enemyPool;
         this.bulletRegion = atlas.findRegion("bulletEnemy");
+        this.ENEMY_SHIP_VY.set(0f, -0.08f);
 
         // Загрузить картинки всех вражеских кораблей
-        for(int i = 0; i < ENEMIES; i++){
+        for(int i = 0; i < ENEMY_TYPES; i++){
             this.enemyRegions[i] = Regions.split(atlas.findRegion("enemy" + i), 1, 2, 2);
         }
     }
@@ -65,19 +66,19 @@ public class EnemiesEmitter {
             generateTimer = 0f;
             EnemyShip enemy = enemyPool.obtain();
 
-            int next = generateNum();
+            int byType = randomEnemyType();
 
-            enemy.set(enemyRegions[next],
-                    ENEMY_SHIP_HEIGHT + (next * 0.03f),
+            enemy.set(enemyRegions[byType],
+                    ENEMY_SHIP_HEIGHT + (byType * 0.03f),
                     FRAME,
                     bulletRegion,
-                    ENEMY_BULLET_HEIGHT + (next * 0.02f),
-                    ENEMY_SHIP_VY,
-                    ENEMY_BULLET_VY,
+                    ENEMY_BULLET_HEIGHT + (byType * 0.02f),
+                    ENEMY_SHIP_VY.add(0, -(level-1) * 0.01f),
+                    ENEMY_BULLET_VY -(level-1) * 0.01f ,
                     ENEMY_SHIP_SHOOT_INTERVAL,
                     ENEMY_SHIP_ARMOR ,
-                    ENEMY_SHIP_DAMAGE + next * 10,
-                    ENEMY_SHIP_HEALTH + next * 10);
+                    ENEMY_SHIP_DAMAGE + byType * 10,
+                    ENEMY_SHIP_HEALTH + byType * 10);
 
             enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
             enemy.setBottom(worldBounds.getTop());
@@ -85,14 +86,14 @@ public class EnemiesEmitter {
     }
 
     /**
-     * Сгенерировать номер следующего вражеского корабля
+     * Определить тип следующего вражеского корабля
      */
-    public int generateNum() {
+    public int randomEnemyType() {
         int i = 0;
 
         float num = Rnd.nextFloat(0f, 10f);
-        if(num >= 9f) i = (ENEMIES - 1);
-        else if(num >= 6) i = (ENEMIES - 2);
+        if(num >= 9f) i = (ENEMY_TYPES - 1);
+        else if(num >= 6) i = (ENEMY_TYPES - 2);
 
         return i;
     }
