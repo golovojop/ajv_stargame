@@ -32,6 +32,8 @@ import s.yarlykov.utils.EnemiesEmitter;
 
 public class GameScreen extends Base2DScreen {
 
+    private enum State {PLAYING, PAUSE, GAME_OVER}
+
     private Background background;
     private Texture backgroundTexture;
     private TextureAtlas atlas;
@@ -52,7 +54,8 @@ public class GameScreen extends Base2DScreen {
     private Sound bulletSound;
     private Sound explosionSound;
 
-    private boolean gameOver;
+    private State state;
+    private State tmpState;
 
     private Font font;
     private StringBuilder sbFrags;
@@ -83,6 +86,8 @@ public class GameScreen extends Base2DScreen {
     @Override
     public void show() {
         super.show();
+
+        state = State.PLAYING;
 
         font = new Font("font/gb.fnt", "font/gb.png");
         font.setSize(FONT_SIZE);
@@ -156,16 +161,20 @@ public class GameScreen extends Base2DScreen {
             star.update(delta);
         }
 
-        if (gameOver) {
-            logoGameOver.update(delta);
-            buttonNewGame.update(delta);
-            ufo.destroy();
-        } else {
-            mainShip.update(delta);
-            bulletPool.updateAllActive(delta);
-            enemyPool.updateAllActive(delta);
-            enemiesEmitter.generate(delta, frags);
-            ufo.update(delta);
+        switch (state) {
+            case PLAYING:
+                mainShip.update(delta);
+                bulletPool.updateAllActive(delta);
+                enemyPool.updateAllActive(delta);
+                enemiesEmitter.generate(delta, frags);
+                ufo.update(delta);
+                break;
+            case GAME_OVER:
+                logoGameOver.update(delta);
+                buttonNewGame.update(delta);
+                ufo.destroy();
+                break;
+                default:
         }
     }
 
@@ -179,15 +188,20 @@ public class GameScreen extends Base2DScreen {
             star.draw(batch);
         }
 
-        if (gameOver) {
-            logoGameOver.draw(batch);
-            buttonNewGame.draw(batch);
-        } else {
-            mainShip.draw(batch);
-            bulletPool.drawAllActive(batch);
-            enemyPool.drawAllActive(batch);
-            ufo.draw(batch);
+        switch (state) {
+            case PLAYING:
+                mainShip.draw(batch);
+                bulletPool.drawAllActive(batch);
+                enemyPool.drawAllActive(batch);
+                ufo.draw(batch);
+                break;
+            case GAME_OVER:
+                logoGameOver.draw(batch);
+                buttonNewGame.draw(batch);
+                break;
+                default:
         }
+
         explosionPool.drawAllActive(batch);
         batch.end();
 
@@ -239,34 +253,68 @@ public class GameScreen extends Base2DScreen {
 
     @Override
     public boolean touchDown(Vector2 touch, int pointer) {
-        mainShip.touchDown(touch, pointer);
-        buttonNewGame.touchDown(touch, pointer);
+        switch (state) {
+            case PLAYING:
+                mainShip.touchDown(touch, pointer);
+                break;
+            case GAME_OVER:
+                buttonNewGame.touchDown(touch, pointer);
+                break;
+                default:
+        }
         return false;
     }
 
     @Override
     public boolean touchUp(Vector2 touch, int pointer) {
-        mainShip.touchUp(touch, pointer);
-        buttonNewGame.touchUp(touch, pointer);
+        switch (state) {
+            case PLAYING:
+                mainShip.touchUp(touch, pointer);
+                break;
+            case GAME_OVER:
+                buttonNewGame.touchUp(touch, pointer);
+                break;
+                default:
+        }
         return false;
     }
 
     @Override
     public boolean keyDown(int keycode) {
-        mainShip.keyDown(keycode);
+        if(state == State.PLAYING) {
+            mainShip.keyDown(keycode);
+        }
         return false;
     }
 
     @Override
     public boolean keyUp(int keycode) {
-        mainShip.keyUp(keycode);
+        if(state == State.PLAYING){
+            mainShip.keyUp(keycode);
+        }
         return false;
+    }
+
+    @Override
+    public void pause() {
+        super.pause();
+        tmpState = state;
+        state = State.PAUSE;
+    }
+
+    @Override
+    public void resume() {
+        super.resume();
+        state = tmpState;
     }
 
     /**
      * Проверить попадание в корабли и столкновение кораблей
      */
     private void checkCollisions() {
+        if (state == State.GAME_OVER || state == State.PAUSE) {
+            return;
+        }
 
         // Отработать столкновение кораблей
         enemyPool.getActiveObjects().stream()
@@ -315,7 +363,7 @@ public class GameScreen extends Base2DScreen {
                     }
                 });
 
-        gameOver = mainShip.isDestroyed();
+        state = mainShip.isDestroyed() ? State.GAME_OVER : State.PLAYING;
     }
 
 //    private void checkCollisions() {
