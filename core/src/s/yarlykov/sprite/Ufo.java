@@ -18,6 +18,11 @@ public class Ufo extends Sprite {
     private Vector2 vY;
     private MainShip ship;
 
+    // Показывает, что корабль получил здоровье и Ufo следует далее
+    // к нижнему краю экрана. Во время этого движения уменьшаем
+    // размер Ufo, чтобы он эффектно исчез.
+    private boolean isUsed;
+
     private float appearanceInterval = 20f;
     private float appearanceTimer = 0;
 
@@ -25,6 +30,7 @@ public class Ufo extends Sprite {
         super(atlas.findRegion("magic1"));
         this.vY = new Vector2(0, -0.18f);
         this.ship = ship;
+        this.isUsed = false;
 
         Timer.schedule(new Timer.Task() {
                            @Override
@@ -47,18 +53,24 @@ public class Ufo extends Sprite {
 
     @Override
     public void update(float delta) {
-        if(ship.getHealth() < (float)(MainShip.MS_START_HP / 2)) {
+
+        if (isDestroyed) {
             appearanceTimer += delta;
-            if (appearanceTimer >= appearanceInterval) {
+            if ((appearanceTimer >= appearanceInterval) && (ship.getHealth() < (float) (MainShip.MS_START_HP / 2))) {
                 isDestroyed = false;
                 appearanceTimer = 0;
-                resetPosition();
-            } else {
-                if (getBottom() <= worldBounds.getBottom()) {
-                    this.destroy();
-                } else {
-                    pos.mulAdd(vY, delta);
-                }
+                startPosition();
+            }
+        } else {
+            pos.mulAdd(vY, delta);
+
+            // Чтобы создать эффект быстро исчезающей вспышки
+            if (isUsed && (getHeight() > 0.03f)) {
+                setHeightProportion(getHeight() - 0.03f);
+            }
+
+            if (getTop() <= worldBounds.getBottom()) {
+                this.destroy();
             }
         }
     }
@@ -68,7 +80,17 @@ public class Ufo extends Sprite {
         if (!isDestroyed) super.draw(batch);
     }
 
-    private void resetPosition() {
+    public void setUsed(boolean isUsed) {
+        this.isUsed = isUsed;
+    }
+
+    public boolean getUsed() {
+        return isUsed;
+    }
+
+    private void startPosition() {
+        isUsed = false;
+        setHeightProportion(0.16f);
         pos.x = Rnd.nextFloat(worldBounds.getLeft() + getHalfWidth(), worldBounds.getRight() - getHalfWidth());
         setBottom(worldBounds.getTop());
     }

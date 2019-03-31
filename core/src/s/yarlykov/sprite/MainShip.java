@@ -46,7 +46,6 @@ public class MainShip extends Ship {
         this.damage = 15;
         this.health = MS_START_HP;
         this.armor = 100;
-        this.halfHealth = this.health / 2;
     }
 
     @Override
@@ -203,6 +202,11 @@ public class MainShip extends Ship {
                         || bullet.getBottom() > pos.y
                         || bullet.getTop() < getBottom()
         );
+    }
+
+    public void addHealth(int h) {
+        this.health += Math.abs(h);
+        if(health > MS_START_HP) health = MS_START_HP;
     }
 
     protected void moveRight() {

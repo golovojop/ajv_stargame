@@ -68,7 +68,7 @@ public class GameScreen extends Base2DScreen {
     private static final String LEVEL = "Level: ";
     private static final String HEALTH = "HP: ";
 
-    private static float HP_BORDER_WIDTH = 0.4f;
+    private static float HP_BORDER_WIDTH = 0.28f;
     private static float HP_BORDER_HEIGHT = 0.032f;
 
     private int frags = 0;
@@ -203,14 +203,14 @@ public class GameScreen extends Base2DScreen {
         srHealth.begin(ShapeRenderer.ShapeType.Filled);
         srHealth.setAutoShapeType(true);
         srHealth.setColor(mainShip.getHealth() > 50 ? Color.PURPLE : Color.RED);
-        float width = HP_BORDER_WIDTH * ((float)mainShip.getHealth()/(float)MainShip.MS_START_HP);
-        srHealth.rect(HP_BORDER_WIDTH/2 - width, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), width, HP_BORDER_HEIGHT);
+        float width = HP_BORDER_WIDTH * ((float) mainShip.getHealth() / (float) MainShip.MS_START_HP);
+        srHealth.rect(HP_BORDER_WIDTH / 2 - width, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), width, HP_BORDER_HEIGHT);
         srHealth.end();
 
         // Затем рисуем рамку вокруг заливки
         srHealth.begin(ShapeRenderer.ShapeType.Line);
         srHealth.setColor(Color.CYAN);
-        srHealth.rect(-HP_BORDER_WIDTH/2, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), HP_BORDER_WIDTH, HP_BORDER_HEIGHT);
+        srHealth.rect(-HP_BORDER_WIDTH / 2, worldBounds.getTop() - (HP_BORDER_HEIGHT + PADDING), HP_BORDER_WIDTH, HP_BORDER_HEIGHT);
         srHealth.end();
     }
 
@@ -267,6 +267,7 @@ public class GameScreen extends Base2DScreen {
      * Проверить попадание в корабли и столкновение кораблей
      */
     private void checkCollisions() {
+
         // Отработать столкновение кораблей
         enemyPool.getActiveObjects().stream()
                 .filter(s -> !s.isDestroyed())
@@ -277,6 +278,16 @@ public class GameScreen extends Base2DScreen {
                         mainShip.hit(mainShip.getHealth());
                     }
                 });
+
+        // Собрать здоровье
+        if (ufo.pos.dst(mainShip.pos) < ufo.getHalfWidth()) {
+            mainShip.addHealth(MainShip.MS_START_HP);
+            if (!ufo.getUsed()) {
+                ufo.setHeightProportion(0.6f);
+                ufo.setUsed(true);
+
+            }
+        }
 
         // Отработать попадание пуль
         bulletPool.getActiveObjects().stream()
@@ -355,7 +366,7 @@ public class GameScreen extends Base2DScreen {
         sbFrags.setLength(0);
         sbLevel.setLength(0);
         sbHealth.setLength(0);
-        float yPadding = PADDING*2;
+        float yPadding = PADDING * 2;
         font.draw(batch, sbFrags.append(FRAGS).append(frags), worldBounds.getLeft() + PADDING, worldBounds.getTop() - yPadding);
         font.draw(batch, sbLevel.append(LEVEL).append(enemiesEmitter.getLevel()), worldBounds.getRight() - PADDING, worldBounds.getTop() - yPadding, Align.right);
         font.draw(batch, sbHealth.append(HEALTH).append(mainShip.getHealth()).append("/" + MainShip.MS_START_HP), worldBounds.pos.x, worldBounds.getTop() - yPadding, Align.center);

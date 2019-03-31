@@ -26,7 +26,6 @@ public class EnemiesEmitter {
     private static final int FRAME = 0;
 
     private static final float ENEMY_BULLET_HEIGHT = 0.01f;
-    private static final float ENEMY_BULLET_VY = -0.3f;
 
     private int level;
 
@@ -61,8 +60,14 @@ public class EnemiesEmitter {
         // Смена уровня учитывает кол-во сбитых врагов.
         level = frags / 10 + 1;
 
+        /**
+         * С каждым уровнем увеличиваем сложность:
+         * - сокращаем интервал создания враж кораблей
+         * - увеличиваем скорость враж кораблей (скорость пули зависит от скорости корабля)
+         *
+         */
         generateTimer += delta;
-        if (generateTimer >= generateInterval) {
+        if (generateTimer >= (generateInterval - (float)(level-1)*0.2)) {
             generateTimer = 0f;
             EnemyShip enemy = enemyPool.obtain();
 
@@ -73,9 +78,9 @@ public class EnemiesEmitter {
                     FRAME,
                     bulletRegion,
                     ENEMY_BULLET_HEIGHT + (byType * 0.02f),
-                    ENEMY_SHIP_VY.add(0, -(level-1) * 0.01f),
-                    ENEMY_BULLET_VY -(level-1) * 0.01f ,
-                    ENEMY_SHIP_SHOOT_INTERVAL,
+                    ENEMY_SHIP_VY.add(0, -(level-1) * 0.005f),
+                    ENEMY_SHIP_VY.y - 0.1f,
+                    (ENEMY_SHIP_SHOOT_INTERVAL < 0.4f) ? 0.4f : ENEMY_SHIP_SHOOT_INTERVAL - (level-1) * 0.2f,
                     ENEMY_SHIP_ARMOR ,
                     ENEMY_SHIP_DAMAGE + byType * 10,
                     ENEMY_SHIP_HEALTH + byType * 10);

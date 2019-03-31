@@ -71,7 +71,6 @@ public class EnemyShip extends Ship {
         this.armor = armor;
         this.damage = damage;
         this.health = health;
-        this.halfHealth = health / 2;
         this.state = State.DESCENT;
         isDestroyed = false;
         setHeightProportion(heightProp);
