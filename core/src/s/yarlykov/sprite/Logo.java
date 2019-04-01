@@ -16,7 +16,6 @@ public class Logo extends Sprite {
 
     @Override
     public void resize(Rect worldBounds) {
-
         pos.set(new Vector2(0, 0.35f));
     }
 }
