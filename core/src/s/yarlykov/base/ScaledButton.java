@@ -50,25 +50,8 @@ public abstract class ScaledButton extends Sprite {
         // Кнопка отрисована с масштабированием поэтому нужно проверять попадание в масштабированный
         // прямоугольник. Координаты центра тоже меняются.
         Rect scaled = getScaled(NORMAL_SCALE);
-
         float spot = 0.09f;
-
-//        System.out.println(String.format("%f, %f, %f, %f",
-//                scaled.pos.x - spot,
-//                scaled.pos.x + spot,
-//                scaled.pos.y + spot,
-//                scaled.pos.y - spot));
-//
-//        System.out.println(touch.x > scaled.pos.x - spot);
-//        System.out.println(touch.x < scaled.pos.x + spot);
-//        System.out.println(touch.y < scaled.pos.y + spot);
-//        System.out.println(touch.y > scaled.pos.y - spot);
-
-        return touch.x > scaled.pos.x - spot
-                && touch.x < scaled.pos.x + spot
-                && touch.y < scaled.pos.y + spot
-                && touch.y > scaled.pos.y - spot;
-
+        return touch.dst(scaled.pos) < spot;
     }
 
     protected abstract void action();
