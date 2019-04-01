@@ -30,7 +30,6 @@ import s.yarlykov.sprite.Star;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.utils.viewport.FitViewport;
 
 public class MenuScreen extends Base2DScreen {
 
