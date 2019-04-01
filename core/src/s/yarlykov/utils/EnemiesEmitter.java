@@ -60,6 +60,8 @@ public class EnemiesEmitter {
         // Смена уровня учитывает кол-во сбитых врагов.
         level = frags / 10 + 1;
 
+        int grad = level - 1;
+
         /**
          * С каждым уровнем увеличиваем сложность:
          * - сокращаем интервал создания враж кораблей
@@ -74,16 +76,16 @@ public class EnemiesEmitter {
             int byType = randomEnemyType();
 
             enemy.set(enemyRegions[byType],
-                    ENEMY_SHIP_HEIGHT + (byType * 0.03f),
+                    ENEMY_SHIP_HEIGHT + (byType*0.03f),
                     FRAME,
                     bulletRegion,
-                    ENEMY_BULLET_HEIGHT + (byType * 0.02f),
-                    ENEMY_SHIP_VY.add(0, -(level-1) * 0.005f),
-                    ENEMY_SHIP_VY.y - 0.1f,
-                    (ENEMY_SHIP_SHOOT_INTERVAL < 0.4f) ? 0.4f : ENEMY_SHIP_SHOOT_INTERVAL - (level-1) * 0.2f,
+                    ENEMY_BULLET_HEIGHT + (byType*0.02f),
+                    ENEMY_SHIP_VY.add(0, -grad*0.003f),
+                    ENEMY_SHIP_VY.y - 0.08f,
+                    (ENEMY_SHIP_SHOOT_INTERVAL < 0.4f) ? 0.4f : ENEMY_SHIP_SHOOT_INTERVAL - grad*0.2f,
                     ENEMY_SHIP_ARMOR ,
-                    ENEMY_SHIP_DAMAGE + byType * 10,
-                    ENEMY_SHIP_HEALTH + byType * 10);
+                    ENEMY_SHIP_DAMAGE + byType*10 + grad*10,
+                    ENEMY_SHIP_HEALTH + byType*10);
 
             enemy.pos.x = Rnd.nextFloat(worldBounds.getLeft() + enemy.getHalfWidth(), worldBounds.getRight() - enemy.getHalfWidth());
             enemy.setBottom(worldBounds.getTop());
