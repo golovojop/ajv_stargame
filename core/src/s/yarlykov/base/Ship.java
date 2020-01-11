@@ -29,7 +29,6 @@ public abstract class Ship extends Sprite {
 
     protected float bulletHeight;
     protected int health;
-    protected int halfHealth;
     protected int armor;
     protected int damage;
 

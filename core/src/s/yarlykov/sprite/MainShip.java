@@ -16,8 +16,10 @@ import s.yarlykov.pool.ExplosionPool;
 import static s.yarlykov.base.Base2DScreen.WORLD_SCALE;
 
 public class MainShip extends Ship {
+    public static int MS_START_HP = 150;
     private static float V_LEN = 0.6f;
     private static final int NOT_TOUCHED = -100;
+
     private boolean isPressedRight;
     private boolean isPressedLeft;
 
@@ -42,9 +44,8 @@ public class MainShip extends Ship {
         this.shootSound = shootSound;
 
         this.damage = 15;
-        this.health = 100;
+        this.health = MS_START_HP;
         this.armor = 100;
-        this.halfHealth = this.health / 2;
     }
 
     @Override
@@ -201,6 +202,11 @@ public class MainShip extends Ship {
                         || bullet.getBottom() > pos.y
                         || bullet.getTop() < getBottom()
         );
+    }
+
+    public void addHealth(int h) {
+        this.health += Math.abs(h);
+        if(health > MS_START_HP) health = MS_START_HP;
     }
 
     protected void moveRight() {

@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 
+import s.yarlykov.base.Font;
 import s.yarlykov.base.Ship;
 import s.yarlykov.base.Sprite;
 import s.yarlykov.math.Rect;
@@ -70,7 +71,6 @@ public class EnemyShip extends Ship {
         this.armor = armor;
         this.damage = damage;
         this.health = health;
-        this.halfHealth = health / 2;
         this.state = State.DESCENT;
         isDestroyed = false;
         setHeightProportion(heightProp);
@@ -107,7 +107,6 @@ public class EnemyShip extends Ship {
                         || bullet.getTop() <  pos.y
         );
     }
-
 
     protected void moveRight() {
         velCurrent.set(velShip);
